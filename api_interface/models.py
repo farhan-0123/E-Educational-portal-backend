@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 
 # Create your models here.
@@ -23,7 +24,7 @@ class ExtendedUserProfile(models.Model):
 
 
 class Class(models.Model):
-    class_id = models.IntegerField(primary_key=True)
+    class_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     branch = models.CharField(
         null=False,
         max_length=3,
@@ -57,9 +58,27 @@ class Class(models.Model):
 class Student(models.Model):
     user_id: User = models.OneToOneField(User, on_delete=models.CASCADE)
     class_id = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.CASCADE)
-    present_days = models.IntegerField(max_length=1)
+    present_days = models.IntegerField()
     fee_status = models.BooleanField()
-    backlog_count = models.IntegerField(max_length=1)
+    backlog_count = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.user_id.first_name} {self.user_id.last_name}"
+
+
+class Subject(models.Model):
+    class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
+    subject_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    subject_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.subject_name}"
+
+
+class Teacher(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    class_id = models.ForeignKey(Class, rel=models.ManyToManyRel, on_delete=models.CASCADE)
+    subject_id = models.ForeignKey(Subject, rel=models.ManyToManyRel, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.user_id.first_name} {self.user_id.last_name}"
