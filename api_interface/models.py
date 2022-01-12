@@ -82,3 +82,52 @@ class Teacher(models.Model):
 
     def __str__(self):
         return f"{self.user_id.first_name} {self.user_id.last_name}"
+
+
+class Assignment(models.Model):
+    assignment_id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
+    subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    assignment_title = models.CharField(max_length=150)
+    max_marks = models.IntegerField()
+    due_date = models.DateField()
+    assignment_file = models.FileField(upload_to="student_assignments/")
+
+    def __str__(self):
+        return f"{self.assignment_title}"
+
+
+class AssignmentComplete(models.Model):
+    assignment_id = models.ForeignKey(Assignment, rel=models.ManyToOneRel, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    complete = models.BooleanField()
+    marks = models.IntegerField()
+
+    def __str__(self):
+        if self.complete:
+            return f"Assignment: {self.assignment_id.assignment_title}" \
+                   f" is completed by {self.student_id.first_name} {self.student_id.last_name}"
+        else:
+            return f"Assignment: {self.assignment_id.assignment_title}" \
+                   f" is not completed by {self.student_id.first_name} {self.student_id.last_name}"
+
+
+class Exam(models.Model):
+    exam_id = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
+    subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    exam_title = models.CharField(max_length=150)
+    max_marks = models.IntegerField()
+    exam_date = models.DateField()
+    exam_file = models.FileField(upload_to="student_exams/")
+
+    def __str__(self):
+        return f"{self.exam_title}"
+
+
+class ExamResult(models.Model):
+    exam_id = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    student_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    result = models.IntegerField()
+
+    def __str__(self):
+        return f"Student {self.student_id.first_name} {self.student_id.last_name} got {self.result}" \
+               f" from Exam {self.exam_id.exam_title} "
