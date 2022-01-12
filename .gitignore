@@ -4,11 +4,17 @@
 */__pycache__/*
 */migrations/*
 /venv
+/student_assignments/*
+/student_exams/*
+/user_profile_images/*
 
 db.sqlite3
 __pycache__/*
 migrations/*
 venv
+*/student_assignments
+*/student_exams
+*/user_profile_images
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,venv
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,venv
@@ -316,7 +322,6 @@ atlassian-ide-plugin.xml
 
 # SonarLint plugin
 .idea/sonarlint/
-
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
 crashlytics.properties
