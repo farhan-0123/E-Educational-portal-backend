@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 import uuid
 
 
@@ -56,8 +57,8 @@ class Class(models.Model):
 
 
 class Student(models.Model):
-    user_id: User = models.OneToOneField(User, on_delete=models.CASCADE)
-    class_id = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.CASCADE)
+    user_id: User = models.OneToOneField(User, on_delete=models.DO_NOTHING)
+    class_id = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
     present_days = models.IntegerField()
     fee_status = models.BooleanField()
     backlog_count = models.IntegerField()
@@ -67,7 +68,7 @@ class Student(models.Model):
 
 
 class Subject(models.Model):
-    class_id = models.ForeignKey(Class, on_delete=models.CASCADE)
+    class_id = models.ForeignKey(Class, on_delete=models.DO_NOTHING)
     subject_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     subject_name = models.CharField(max_length=100)
 
@@ -77,8 +78,8 @@ class Subject(models.Model):
 
 class Teacher(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    class_id = models.ForeignKey(Class, rel=models.ManyToManyRel, on_delete=models.CASCADE)
-    subject_id = models.ForeignKey(Subject, rel=models.ManyToManyRel, on_delete=models.CASCADE, null=True)
+    class_id = models.ForeignKey(Class, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING)
+    subject_id = models.ForeignKey(Subject, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
 
     def __str__(self):
         return f"{self.user_id.first_name} {self.user_id.last_name}"
@@ -86,9 +87,14 @@ class Teacher(models.Model):
 
 class Assignment(models.Model):
     assignment_id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
-    subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    subject_id = models.ForeignKey(Subject, on_delete=models.DO_NOTHING)
     assignment_title = models.CharField(max_length=150)
-    max_marks = models.IntegerField()
+    max_marks = models.IntegerField(
+        validators=[
+            MaxValueValidator(limit_value=200, message="Value more than 200"),
+            MinValueValidator(limit_value=0, message="Value less than zero")
+        ]
+    )
     due_date = models.DateField()
     assignment_file = models.FileField(upload_to="student_assignments/")
 
@@ -97,10 +103,15 @@ class Assignment(models.Model):
 
 
 class AssignmentComplete(models.Model):
-    assignment_id = models.ForeignKey(Assignment, rel=models.ManyToOneRel, on_delete=models.CASCADE)
+    assignment_id: Assignment = models.ForeignKey(Assignment, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
     student_id = models.ForeignKey(User, on_delete=models.CASCADE)
     complete = models.BooleanField()
-    marks = models.IntegerField()
+    marks = models.IntegerField(
+        validators=[
+            MaxValueValidator(limit_value=200, message="Value more than 200"),
+            MinValueValidator(limit_value=0, message="Value less than 0")
+        ]
+    )
 
     def __str__(self):
         if self.complete:
@@ -113,20 +124,30 @@ class AssignmentComplete(models.Model):
 
 class Exam(models.Model):
     exam_id = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
-    subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    subject_id = models.ForeignKey(Subject, on_delete=models.DO_NOTHING)
     exam_title = models.CharField(max_length=150)
-    max_marks = models.IntegerField()
+    max_marks = models.IntegerField(
+        validators=[
+            MaxValueValidator(limit_value=200, message="Value more than 200"),
+            MinValueValidator(limit_value=0, message="Value less than zero")
+        ]
+    )
     exam_date = models.DateField()
     exam_file = models.FileField(upload_to="student_exams/")
 
     def __str__(self):
-        return f"{self.exam_title}"
+        return f"{self.subject_id.subject_name} {self.exam_title} {self.exam_date}"
 
 
 class ExamResult(models.Model):
-    exam_id = models.ForeignKey(Exam, on_delete=models.CASCADE)
-    student_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    result = models.IntegerField()
+    exam_id = models.ForeignKey(Exam, on_delete=models.DO_NOTHING)
+    student_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    result = models.IntegerField(
+        validators=[
+            MaxValueValidator(limit_value=200, message="Value more than 200"),
+            MinValueValidator(limit_value=0, message="Value less than 0")
+        ]
+    )
 
     def __str__(self):
         return f"Student {self.student_id.first_name} {self.student_id.last_name} got {self.result}" \
