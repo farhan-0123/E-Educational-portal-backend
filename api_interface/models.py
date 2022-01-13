@@ -19,6 +19,16 @@ class ExtendedUserProfile(models.Model):
         ],
         default="M"
     )
+    designation = models.CharField(
+        null=False,
+        max_length=1,
+        choices=[
+            ("S", "Student"),
+            ("T", "Teacher"),
+            ("A", "Admin")
+        ],
+        default="S"
+    )
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
