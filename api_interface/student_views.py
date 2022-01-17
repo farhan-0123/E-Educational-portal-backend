@@ -1,8 +1,7 @@
 from rest_framework.authtoken.views import APIView
 from rest_framework import authentication, permissions
 from rest_framework.response import Response
-
-from .models import ExtendedUserProfile
+from .models import ExtendedUserProfile, AssignmentComplete
 
 
 class StudentProfileView(APIView):
@@ -29,5 +28,14 @@ class StudentAssignmentsView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self):
-        pass
+    def get(self, request):
+        assignments = [
+            {
+                "assignment_id": assignment.assignment_id.assignment_id,
+                "assignment_title": assignment.assignment_id.assignment_title,
+                "due_date": assignment.assignment_id.due_date,
+                "complete": assignment.complete,
+                "marks": assignment.marks,
+            } for assignment in AssignmentComplete.objects.all().filter(student_id=request.user)]
+
+        return Response(assignments)

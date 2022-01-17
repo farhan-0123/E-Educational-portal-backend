@@ -1,6 +1,7 @@
 # User Defined
 
 */db.sqlite3
+*/db.json
 */__pycache__/*
 */migrations/*
 /venv
@@ -9,6 +10,7 @@
 /user_profile_images/*
 
 db.sqlite3
+db.json
 __pycache__/*
 migrations/*
 venv
