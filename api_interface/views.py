@@ -19,7 +19,7 @@ class CustomAuthToken(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
-            'designation': user_detail.designation
+            'designation': user_detail.get_designation_display()
         })
 
 
@@ -28,7 +28,6 @@ class UserProfileImageView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        user = request.user
-        user_extra_details = ExtendedUserProfile.objects.get(user=user)
-        user_image = open(str(user_extra_details.image_id), "rb")
+        user_image_path = ExtendedUserProfile.objects.get(user=request.user).image_id
+        user_image = open(str(user_image_path), "rb")
         return HttpResponse(user_image, content_type="image/*")

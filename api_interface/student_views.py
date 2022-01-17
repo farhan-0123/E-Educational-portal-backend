@@ -10,15 +10,24 @@ class StudentProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        user = request.user
-        extra_user_detail = ExtendedUserProfile.objects.get(user=user)
+        extra_user_detail = ExtendedUserProfile.objects.get(user=request.user)
 
         user_details = {
-            "username": user.username,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
+            "username": request.user.username,
+            "first_name": request.user.first_name,
+            "last_name": request.user.last_name,
+            "email": request.user.email,
             "date_of_birth": extra_user_detail.date_of_birth,
+            "gender": extra_user_detail.get_gender_display(),
+            "designation": extra_user_detail.get_designation_display(),
         }
 
         return Response(user_details)
+
+
+class StudentAssignmentsView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self):
+        pass
