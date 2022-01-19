@@ -8,7 +8,8 @@ import uuid
 class ExtendedUserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     date_of_birth = models.DateField(null=False)
-    image_id = models.ImageField(upload_to="user_profile_images/")
+    image = models.ImageField(upload_to="user_profile_images/")
+    phone = models.CharField(max_length=15, null=False, default="+99999999999999")
     gender = models.CharField(
         null=False,
         max_length=1,
@@ -34,70 +35,64 @@ class ExtendedUserProfile(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
 
+class Branch(models.Model):
+    branch_pk = models.IntegerField(primary_key=True, auto_created=True, editable=False)
+    branch_code = models.CharField(max_length=3)
+    branch_name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f"{self.branch_name}"
+
+
 class Class(models.Model):
-    class_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    branch = models.CharField(
-        null=False,
-        max_length=3,
-        choices=[
-            ("COE", "Computer Engineer"),
-            ("MEE", "Mechanical Engineer"),
-            ("CHE", "Chemical Engineer"),
+    class_pk = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    branch_fk = models.ForeignKey(Branch, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
+    semester = models.IntegerField(
+        validators=[
+            MaxValueValidator(limit_value=8, message="Semester cannot be more than 8"),
+            MinValueValidator(limit_value=1, message="Semester cannot be more less 1")
         ],
-        default="COE"
-    )
-    semester = models.CharField(
-        null=False,
-        max_length=1,
-        choices=[
-            ("1", "1"),
-            ("2", "2"),
-            ("3", "3"),
-            ("4", "4"),
-            ("5", "5"),
-            ("6", "6"),
-            ("7", "7"),
-            ("8", "8"),
-        ],
-        default="1"
     )
 
     def __str__(self):
-        return f"Branch : {self.branch} and Semester: {self.semester}"
+        return f"Branch : {self.branch_fk.branch_name} and Semester: {self.semester}"
 
 
 class Student(models.Model):
-    user_id: User = models.OneToOneField(User, on_delete=models.DO_NOTHING)
-    class_id = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
+    user = models.OneToOneField(User, on_delete=models.DO_NOTHING)
+    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
     present_days = models.IntegerField()
     fee_status = models.BooleanField()
     backlog_count = models.IntegerField()
+    parent_phone = models.CharField(max_length=15, default="+99999999999999")
 
     def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name}"
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 class Subject(models.Model):
-    class_id = models.ForeignKey(Class, on_delete=models.DO_NOTHING)
-    subject_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
+    subject = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     subject_name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.subject_name}"
+        return f" Semester: {self.class_fk.semester} Branch: {self.class_fk.branch_fk.branch_name}" \
+               f" Name: {self.subject_name}"
 
 
 class Teacher(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    class_id = models.ForeignKey(Class, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING)
-    subject_id = models.ForeignKey(Subject, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    class_fk = models.ForeignKey(Class, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
+    subject_fk = models.ForeignKey(Subject, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
 
     def __str__(self):
-        return f"{self.user_id.first_name} {self.user_id.last_name}"
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 class Assignment(models.Model):
-    assignment_id = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
-    subject_id = models.ForeignKey(Subject, on_delete=models.DO_NOTHING)
+    assignment_pk = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
+    subject_fk = models.ForeignKey(Subject, on_delete=models.DO_NOTHING, null=True)
+    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING, null=True)
     assignment_title = models.CharField(max_length=150)
     max_marks = models.IntegerField(
         validators=[
@@ -113,8 +108,9 @@ class Assignment(models.Model):
 
 
 class AssignmentComplete(models.Model):
-    assignment_id: Assignment = models.ForeignKey(Assignment, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
-    student_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    assignment_fk = models.ForeignKey(Assignment, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
+    student_fk = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING, null=True)
     complete = models.BooleanField()
     marks = models.IntegerField(
         validators=[
@@ -125,16 +121,17 @@ class AssignmentComplete(models.Model):
 
     def __str__(self):
         if self.complete:
-            return f"Assignment: {self.assignment_id.assignment_title}" \
-                   f" is completed by {self.student_id.first_name} {self.student_id.last_name}"
+            return f"Assignment: {self.assignment_fk.assignment_title}" \
+                   f" is completed by {self.student_fk.first_name} {self.student_fk.last_name}"
         else:
-            return f"Assignment: {self.assignment_id.assignment_title}" \
-                   f" is not completed by {self.student_id.first_name} {self.student_id.last_name}"
+            return f"Assignment: {self.assignment_fk.assignment_title}" \
+                   f" is not completed by {self.student_fk.first_name} {self.student_fk.last_name}"
 
 
 class Exam(models.Model):
-    exam_id = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
-    subject_id = models.ForeignKey(Subject, on_delete=models.DO_NOTHING)
+    exam = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
+    subject_fk = models.ForeignKey(Subject, on_delete=models.DO_NOTHING, null=True)
+    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING, null=True)
     exam_title = models.CharField(max_length=150)
     max_marks = models.IntegerField(
         validators=[
@@ -146,12 +143,13 @@ class Exam(models.Model):
     exam_file = models.FileField(upload_to="student_exams/")
 
     def __str__(self):
-        return f"{self.subject_id.subject_name} {self.exam_title} {self.exam_date}"
+        return f"{self.subject_fk.subject_name} {self.exam_title} {self.exam_date}"
 
 
 class ExamResult(models.Model):
-    exam_id = models.ForeignKey(Exam, on_delete=models.DO_NOTHING)
-    student_id = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    exam_fk = models.ForeignKey(Exam, on_delete=models.DO_NOTHING)
+    student_fk = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING, null=True)
     result = models.IntegerField(
         validators=[
             MaxValueValidator(limit_value=200, message="Value more than 200"),
@@ -160,5 +158,5 @@ class ExamResult(models.Model):
     )
 
     def __str__(self):
-        return f"Student {self.student_id.first_name} {self.student_id.last_name} got {self.result}" \
-               f" from Exam {self.exam_id.exam_title} "
+        return f"Student {self.student_fk.first_name} {self.student_fk.last_name} got {self.result}" \
+               f" from Exam {self.exam_fk.exam_title} "

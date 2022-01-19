@@ -27,7 +27,8 @@ class UserProfileImageView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        user_image_path = ExtendedUserProfile.objects.get(user=request.user).image_id
-        user_image = open(str(user_image_path), "rb")
-        return HttpResponse(user_image, content_type="image/*")
+    def get(self, request):
+        user_image_path = str(ExtendedUserProfile.objects.get(user=request.user).image)
+
+        with open(user_image_path, "rb") as user_image:
+            return HttpResponse(user_image, content_type="image/*")
