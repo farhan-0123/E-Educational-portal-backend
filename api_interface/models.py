@@ -4,7 +4,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 import uuid
 
 
-# Create your models here.
 class ExtendedUserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     date_of_birth = models.DateField(null=False)

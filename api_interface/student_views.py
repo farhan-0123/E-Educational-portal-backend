@@ -19,14 +19,14 @@ class StudentProfileView(APIView):
         student_details = Student.objects.get(user=request.user)
 
         user_details = {
-            "username": request.user.username,
+            "UserName": request.user.username,
             "first_name": request.user.first_name,
             "last_name": request.user.last_name,
             "email": request.user.email,
             "date_of_birth": extra_user_detail.date_of_birth,
             "gender": extra_user_detail.get_gender_display(),
             "designation": extra_user_detail.get_designation_display(),
-            "semester": student_details.class_fk.semester,
+            "Semester": student_details.class_fk.semester,
             "branch_name": student_details.class_fk.branch_fk.branch_name,
             "branch_code": student_details.class_fk.branch_fk.branch_code,
             "present_days": student_details.present_days,
