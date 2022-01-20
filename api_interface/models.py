@@ -7,7 +7,7 @@ import uuid
 class ExtendedUserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     date_of_birth = models.DateField(null=False)
-    image = models.ImageField(upload_to="user_profile_images/")
+    image_link = models.URLField()
     phone = models.CharField(max_length=15, null=False, default="+99999999999999")
     gender = models.CharField(
         null=False,
@@ -60,6 +60,7 @@ class Class(models.Model):
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.DO_NOTHING)
     class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
+    course = models.CharField(max_length=10, null=False, default="NAN")
     present_days = models.IntegerField()
     fee_status = models.BooleanField()
     backlog_count = models.IntegerField()

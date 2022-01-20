@@ -20,6 +20,7 @@ class StudentProfileView(APIView):
 
         user_details = {
             "UserName": request.user.username,
+            "image": extra_user_detail.image_link,
             "first_name": request.user.first_name,
             "last_name": request.user.last_name,
             "email": request.user.email,
@@ -27,6 +28,9 @@ class StudentProfileView(APIView):
             "gender": extra_user_detail.get_gender_display(),
             "designation": extra_user_detail.get_designation_display(),
             "Semester": student_details.class_fk.semester,
+            "course": student_details.course,
+            "s_mobile": extra_user_detail.phone,
+            "p_mobile": student_details.parent_phone,
             "branch_name": student_details.class_fk.branch_fk.branch_name,
             "branch_code": student_details.class_fk.branch_fk.branch_code,
             "present_days": student_details.present_days,

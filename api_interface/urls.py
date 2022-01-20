@@ -5,6 +5,7 @@ from rest_framework import routers
 
 from .views import CustomAuthToken, UserProfileImageView
 from .student_views import StudentProfileView, StudentAssignmentsView, StudentAssignmentFileView, StudentExamResultView
+from .teacher_view import TeacherProfileView
 
 router = routers.DefaultRouter()
 
@@ -18,6 +19,9 @@ urlpatterns = [
     path('studentprofile/', StudentProfileView.as_view()),
     path('studentassignments/', StudentAssignmentsView.as_view()),
     path('studentassignmentfile/', StudentAssignmentFileView.as_view()),
-    path('studentexamresults/', StudentExamResultView.as_view())
+    path('studentexamresults/', StudentExamResultView.as_view()),
+
+    # teacher end points
+    path('teacherprofile/', TeacherProfileView.as_view())
 
 ]
