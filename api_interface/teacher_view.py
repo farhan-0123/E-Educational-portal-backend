@@ -20,12 +20,14 @@ class TeacherProfileView(APIView):
 
         user_details = {
             "UserName": request.user.username,
+            "image": extra_user_detail.image_link,
             "first_name": request.user.first_name,
             "last_name": request.user.last_name,
             "email": request.user.email,
             "date_of_birth": extra_user_detail.date_of_birth,
             "gender": extra_user_detail.get_gender_display(),
             "designation": extra_user_detail.get_designation_display(),
+            "t_mobile": extra_user_detail.phone,
             "Semester": teacher_details.class_fk.semester,
             "branch_name": teacher_details.class_fk.branch_fk.branch_name,
             "branch_code": teacher_details.class_fk.branch_fk.branch_code,
