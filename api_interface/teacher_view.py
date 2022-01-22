@@ -24,6 +24,7 @@ class TeacherProfileView(APIView):
             "first_name": request.user.first_name,
             "last_name": request.user.last_name,
             "email": request.user.email,
+            "joining_data": request.user.date_joined,
             "date_of_birth": extra_user_detail.date_of_birth,
             "gender": extra_user_detail.get_gender_display(),
             "designation": extra_user_detail.get_designation_display(),
@@ -31,6 +32,8 @@ class TeacherProfileView(APIView):
             "Semester": teacher_details.class_fk.semester,
             "branch_name": teacher_details.class_fk.branch_fk.branch_name,
             "branch_code": teacher_details.class_fk.branch_fk.branch_code,
+            "field_of_knowledge": teacher_details.field_of_knowledge,
+            "salary": teacher_details.salary
         }
 
         return Response(user_details)

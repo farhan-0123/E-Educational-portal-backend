@@ -84,6 +84,8 @@ class Teacher(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     class_fk = models.ForeignKey(Class, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
     subject_fk = models.ForeignKey(Subject, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
+    field_of_knowledge = models.CharField(max_length=200)
+    salary = models.IntegerField()
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
