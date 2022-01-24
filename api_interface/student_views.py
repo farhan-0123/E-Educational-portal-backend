@@ -41,6 +41,24 @@ class StudentProfileView(APIView):
         return Response(user_details)
 
 
+class StudentSubjectView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        class_fk = Student.objects.get(user=request.user).class_fk
+        subject_list = Subject.objects.filter(class_fk=class_fk)
+
+        result_list = [{
+            "subjet_name": subject.subject_name,
+            "subject_credits": subject.subject_credits,
+            "teacher_first_name": subject.subject_teacher.user.first_name,
+            "teacher_last_name": subject.subject_teacher.user.last_name,
+        } for subject in subject_list]
+
+        return Response(result_list)
+
+
 class StudentAssignmentsView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]
