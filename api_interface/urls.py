@@ -3,7 +3,7 @@ from django.conf.urls import include
 
 from rest_framework import routers
 
-from .views import CustomAuthToken, UserProfileImageView
+from .views import UserProfileImageView, StudentAuthToken, TeacherAuthToken, AdminAuthToken
 from .student_views import StudentProfileView, StudentAssignmentsView, StudentAssignmentFileView, StudentExamResultView, \
     StudentSubjectView
 from .teacher_view import TeacherProfileView
@@ -13,7 +13,9 @@ router = routers.DefaultRouter()
 urlpatterns = [
     # common end points
     path('', include(router.urls)),
-    path('auth/', CustomAuthToken.as_view()),
+    path('auth/student/', StudentAuthToken.as_view()),
+    path('auth/teacher/', TeacherAuthToken.as_view()),
+    path('auth/admin/', AdminAuthToken.as_view()),
     path('userprofileimage/', UserProfileImageView.as_view()),
 
     # student end points
