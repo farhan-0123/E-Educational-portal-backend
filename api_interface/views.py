@@ -22,10 +22,6 @@ class StudentAuthToken(ObtainAuthToken):
                 'token': token.key,
                 'designation': user_detail.get_designation_display()
             })
-        else:
-            return Response({
-                "invalid": "You are not authorized to login here"
-            })
 
 
 class TeacherAuthToken(ObtainAuthToken):
@@ -42,10 +38,6 @@ class TeacherAuthToken(ObtainAuthToken):
                 'token': token.key,
                 'designation': user_detail.get_designation_display()
             })
-        else:
-            return Response({
-                "invalid": "You are not authorized to login here"
-            })
 
 
 class AdminAuthToken(ObtainAuthToken):
@@ -61,10 +53,6 @@ class AdminAuthToken(ObtainAuthToken):
             return Response({
                 'token': token.key,
                 'designation': user_detail.get_designation_display()
-            })
-        else:
-            return Response({
-                "invalid": "You are not authorized to login here"
             })
 
 
