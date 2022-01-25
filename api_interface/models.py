@@ -53,6 +53,7 @@ class Class(models.Model):
         ],
     )
 
+
     def __str__(self):
         return f"Branch : {self.branch_fk.branch_name} and Semester: {self.semester}"
 
@@ -86,6 +87,7 @@ class Subject(models.Model):
     subject_name = models.CharField(max_length=100)
     subject_credits = models.IntegerField()
     subject_teacher = models.ForeignKey(Teacher, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
+    subject_photo_url = models.URLField(default="null")
 
     def __str__(self):
         return f" Semester: {self.class_fk.semester} Branch: {self.class_fk.branch_fk.branch_name}" \
