@@ -84,14 +84,13 @@ class Teacher(models.Model):
 class Subject(models.Model):
     class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
     subject = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    subject_code = models.IntegerField()
     subject_name = models.CharField(max_length=100)
     subject_credits = models.IntegerField()
-    subject_teacher = models.ForeignKey(Teacher, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
     subject_photo_url = models.URLField(default="null")
 
     def __str__(self):
-        return f" Semester: {self.class_fk.semester} Branch: {self.class_fk.branch_fk.branch_name}" \
-               f" Name: {self.subject_name}"
+        return f" Subject Code: {self.subject_code} Subject Name: {self.subject_name}"
 
 
 class Assignment(models.Model):
