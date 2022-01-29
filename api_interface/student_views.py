@@ -50,11 +50,10 @@ class StudentSubjectView(APIView):
         subject_list = Subject.objects.filter(class_fk=class_fk)
 
         result_list = [{
-            "subjet_name": subject.subject_name,
+            "subject_code": subject.subject_code,
+            "subject_name": subject.subject_name,
             "subject_credits": subject.subject_credits,
             "subject_photo": subject.subject_photo_url,
-            "teacher_first_name": subject.subject_teacher.user.first_name,
-            "teacher_last_name": subject.subject_teacher.user.last_name,
         } for subject in subject_list]
 
         return Response(result_list)
