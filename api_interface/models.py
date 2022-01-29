@@ -53,7 +53,6 @@ class Class(models.Model):
         ],
     )
 
-
     def __str__(self):
         return f"Branch : {self.branch_fk.branch_name} and Semester: {self.semester}"
 
@@ -71,16 +70,6 @@ class Student(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
 
-class Teacher(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    class_fk = models.ForeignKey(Class, rel=models.ManyToManyRel, on_delete=models.DO_NOTHING, null=True)
-    field_of_knowledge = models.CharField(max_length=200)
-    salary = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
-
-
 class Subject(models.Model):
     class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
     subject = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -91,6 +80,16 @@ class Subject(models.Model):
 
     def __str__(self):
         return f" Subject Code: {self.subject_code} Subject Name: {self.subject_name}"
+
+
+class Teacher(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.DO_NOTHING, null=True)
+    field_of_knowledge = models.CharField(max_length=200)
+    salary = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 class Assignment(models.Model):

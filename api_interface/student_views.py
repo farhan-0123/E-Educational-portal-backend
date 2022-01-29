@@ -53,7 +53,7 @@ class StudentSubjectView(APIView):
             "subject_code": subject.subject_code,
             "subject_name": subject.subject_name,
             "subject_credits": subject.subject_credits,
-            "subject_photo": subject.subject_photo_url,
+            "subject_photo": subject.subject_photo_url
         } for subject in subject_list]
 
         return Response(result_list)

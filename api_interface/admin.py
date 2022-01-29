@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from .models import ExtendedUserProfile, Student, Class, Teacher, Subject, Assignment, AssignmentComplete, Exam, \
     ExamResult, Branch
 

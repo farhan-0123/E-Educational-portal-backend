@@ -29,8 +29,8 @@ class TeacherProfileView(APIView):
             "gender": extra_user_detail.get_gender_display(),
             "designation": extra_user_detail.get_designation_display(),
             "t_mobile": extra_user_detail.phone,
-            "branch_name": teacher_details.class_fk.branch_fk.branch_name,
-            "branch_code": teacher_details.class_fk.branch_fk.branch_code,
+            "branch_name": teacher_details.branch.branch_name,
+            "branch_code": teacher_details.branch.branch_code,
             "field_of_knowledge": teacher_details.field_of_knowledge,
             "salary": teacher_details.salary
         }
