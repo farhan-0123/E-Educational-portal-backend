@@ -92,6 +92,15 @@ class Teacher(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
 
+class TeacherSubject(models.Model):
+    teacher_subject_pk = models.IntegerField(primary_key=True, auto_created=True, editable=False)
+    teacher_fk = models.ForeignKey(Teacher, on_delete=models.DO_NOTHING)
+    subject_fk = models.ForeignKey(Subject, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f"Teacher: {self.teacher_fk} {self.subject_fk}"
+
+
 class Assignment(models.Model):
     assignment_pk = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
     subject_fk = models.ForeignKey(Subject, on_delete=models.DO_NOTHING, null=True)

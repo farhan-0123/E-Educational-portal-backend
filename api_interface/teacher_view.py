@@ -6,8 +6,7 @@ from rest_framework.response import Response
 
 import mimetypes
 
-from .models import ExtendedUserProfile, Assignment, AssignmentComplete, Exam, ExamResult, Teacher, Student, Class, \
-    Subject, Branch
+from .models import ExtendedUserProfile, Teacher, TeacherSubject
 
 
 class TeacherProfileView(APIView):
@@ -36,3 +35,23 @@ class TeacherProfileView(APIView):
         }
 
         return Response(user_details)
+
+
+class TeacherSubjectView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        teacher_obj = Teacher.objects.get(user=request.user)
+        teacher_subject_obj_list = TeacherSubject.objects.filter(teacher_fk=teacher_obj)
+
+        return_data = [
+            {
+                "subject_code": teacher_subject_obj.subject_fk.subject_code,
+                "subject_name": teacher_subject_obj.subject_fk.subject_name,
+                "subject_credits": teacher_subject_obj.subject_fk.subject_credits,
+                "subject_photo": teacher_subject_obj.subject_fk.subject_photo_url
+            } for teacher_subject_obj in teacher_subject_obj_list
+        ]
+
+        return Response(return_data)

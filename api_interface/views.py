@@ -54,14 +54,3 @@ class AdminAuthToken(ObtainAuthToken):
                 'token': token.key,
                 'designation': user_detail.get_designation_display()
             })
-
-
-class UserProfileImageView(APIView):
-    authentication_classes = [authentication.TokenAuthentication, ]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        user_image_path = str(ExtendedUserProfile.objects.get(user=request.user).image)
-
-        with open(user_image_path, "rb") as user_image:
-            return HttpResponse(user_image, content_type="image/*")
