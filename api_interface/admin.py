@@ -19,7 +19,15 @@ class ClassAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Class, ClassAdmin)
-admin.site.register(Teacher)
+
+
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ["user", 'field_of_knowledge', 'salary']
+    ordering = ["user", "salary"]
+    list_filter = ["branch"]
+
+
+admin.site.register(Teacher, TeacherAdmin)
 
 
 class SubjectAdmin(admin.ModelAdmin):
@@ -40,4 +48,11 @@ admin.site.register(AssignmentComplete)
 admin.site.register(Exam)
 admin.site.register(ExamResult)
 admin.site.register(Branch)
-admin.site.register(TeacherSubject)
+
+
+class TeacherSubjectAdmin(admin.ModelAdmin):
+    list_display = ['teacher_fk', 'subject_fk']
+    ordering = ['teacher_fk', 'subject_fk']
+
+
+admin.site.register(TeacherSubject, TeacherSubjectAdmin)
