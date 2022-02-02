@@ -6,7 +6,8 @@ from rest_framework import routers
 from .views import \
     StudentAuthToken, \
     TeacherAuthToken, \
-    AdminAuthToken
+    AdminAuthToken, \
+    SubjectDetailsLinkView
 
 from .student_views import \
     StudentProfileView, \
@@ -28,6 +29,7 @@ urlpatterns = [
     path('auth/student/', StudentAuthToken.as_view()),
     path('auth/teacher/', TeacherAuthToken.as_view()),
     path('auth/admin/', AdminAuthToken.as_view()),
+    path('subjectdetailslink/', SubjectDetailsLinkView.as_view()),
 
     # student end points
     path('studentprofile/', StudentProfileView.as_view()),

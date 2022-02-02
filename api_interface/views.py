@@ -8,6 +8,20 @@ from rest_framework.response import Response
 from .models import ExtendedUserProfile
 
 
+class SubjectDetailsLinkView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        return Response(
+            {
+                "link": "https://s3-ap-southeast-1.amazonaws.com/gtusitecirculars/Syallbus/" +
+                        str(request.data["subject_code"]) +
+                        ".pdf"
+            }
+        )
+
+
 class StudentAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
