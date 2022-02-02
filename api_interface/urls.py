@@ -4,20 +4,21 @@ from django.conf.urls import include
 from rest_framework import routers
 
 from .views import \
-    StudentAuthToken,\
-    TeacherAuthToken,\
+    StudentAuthToken, \
+    TeacherAuthToken, \
     AdminAuthToken
 
 from .student_views import \
-    StudentProfileView,\
-    StudentAssignmentsView,\
-    StudentAssignmentFileView,\
-    StudentExamResultView,\
+    StudentProfileView, \
+    StudentAssignmentsView, \
+    StudentAssignmentFileView, \
+    StudentExamResultView, \
     StudentSubjectView
 
 from .teacher_view import \
     TeacherProfileView, \
-    TeacherSubjectView
+    TeacherSubjectView, \
+    TeacherSubjectStudentView
 
 router = routers.DefaultRouter()
 
@@ -37,6 +38,7 @@ urlpatterns = [
 
     # teacher end points
     path('teacherprofile/', TeacherProfileView.as_view()),
-    path('teachersubject/', TeacherSubjectView.as_view())
+    path('teachersubject/', TeacherSubjectView.as_view()),
+    path('teachersubjectstudentlist/', TeacherSubjectStudentView.as_view())
 
 ]
