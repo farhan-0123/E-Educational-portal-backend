@@ -50,7 +50,9 @@ class TeacherSubjectView(APIView):
                 "subject_code": teacher_subject_obj.subject_fk.subject_code,
                 "subject_name": teacher_subject_obj.subject_fk.subject_name,
                 "subject_credits": teacher_subject_obj.subject_fk.subject_credits,
-                "subject_photo": teacher_subject_obj.subject_fk.subject_photo_url
+                "subject_photo": teacher_subject_obj.subject_fk.subject_photo_url,
+                "semester": teacher_subject_obj.subject_fk.class_fk.semester,
+                "branch": teacher_subject_obj.subject_fk.class_fk.branch_fk.branch_name,
             } for teacher_subject_obj in teacher_subject_obj_list
         ]
 
