@@ -6,10 +6,9 @@ from rest_framework.authtoken.models import Token
 
 # Create your tests here.
 class AuthTokenTestCase(TestCase):
-    fixtures = ["./fixtures/db_800.json"]
-
-    def test_nothing(self):
-        pass
+    fixtures = [
+        "./fixtures/test.json"
+    ]
 
     def test_student_auth_token_with_student_login(self):
         # testing random student login

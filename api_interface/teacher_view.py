@@ -68,10 +68,9 @@ class TeacherSubjectStudentView(APIView):
         teacher_subject_obj_list = TeacherSubject.objects.filter(teacher_fk=teacher)
         class_ = None
         for teacher_subject_obj in teacher_subject_obj_list:
-            if teacher_subject_obj.subject_fk.subject_code == request.data["subject_code"]:
+            if teacher_subject_obj.subject_fk.subject_code == int(request.data["subject_code"]):
                 class_ = teacher_subject_obj.subject_fk.class_fk
                 break
-
         student_list = Student.objects.filter(class_fk=class_)
 
         return_list = [
