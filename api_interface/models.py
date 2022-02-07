@@ -1,7 +1,8 @@
-from django.db import models
+import uuid, datetime
+
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-import uuid
+from django.db import models
 
 
 class ExtendedUserProfile(models.Model):
@@ -101,22 +102,29 @@ class TeacherSubject(models.Model):
         return f"Teacher: {self.teacher_fk} {self.subject_fk}"
 
 
+def custom_file_path(instance, filename):
+    return "/".join([
+        "student_assignments",
+        instance.subject_fk.class_fk.branch_fk.branch_name,
+        str(instance.subject_fk.subject_code),
+        datetime.date.today().isoformat(),
+        filename
+    ])
+
+
 class Assignment(models.Model):
     assignment_pk = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
     subject_fk = models.ForeignKey(Subject, on_delete=models.DO_NOTHING, null=True)
-    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING, null=True)
-    assignment_title = models.CharField(max_length=150)
-    max_marks = models.IntegerField(
-        validators=[
-            MaxValueValidator(limit_value=200, message="Value more than 200"),
-            MinValueValidator(limit_value=0, message="Value less than zero")
-        ]
-    )
-    due_date = models.DateField()
-    assignment_file = models.FileField(upload_to="student_assignments/")
+    assignment_file = models.FileField(upload_to=custom_file_path)
 
     def __str__(self):
-        return f"{self.assignment_title}"
+        file_path = str(self.assignment_file)
+        file_name = file_path.split("/")[-1]
+        return f"{self.subject_fk} File Name: {file_name}"
+
+    def delete(self, using=None, keep_parents=False):
+        self.assignment_file.storage.delete(self.assignment_file.name)
+        super().delete()
 
 
 class AssignmentComplete(models.Model):

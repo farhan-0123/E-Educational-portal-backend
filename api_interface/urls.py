@@ -19,7 +19,9 @@ from .student_views import \
 from .teacher_view import \
     TeacherProfileView, \
     TeacherSubjectView, \
-    TeacherSubjectStudentView
+    TeacherSubjectStudentView, \
+    TeacherAssignmentFileUploadView, \
+    TeacherAssignmentListView
 
 router = routers.DefaultRouter()
 
@@ -41,6 +43,8 @@ urlpatterns = [
     # teacher end points
     path('teacherprofile/', TeacherProfileView.as_view()),
     path('teachersubject/', TeacherSubjectView.as_view()),
-    path('teachersubjectstudentlist/', TeacherSubjectStudentView.as_view())
+    path('teachersubjectstudentlist/', TeacherSubjectStudentView.as_view()),
+    path('teacherassignmentfileupload/', TeacherAssignmentFileUploadView.as_view()),
+    path('teacherassignmentlist/', TeacherAssignmentListView.as_view()),
 
 ]

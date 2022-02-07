@@ -1,12 +1,12 @@
 from django.http.response import HttpResponse
 
 from rest_framework.authtoken.views import APIView
-from rest_framework import authentication, permissions
+from rest_framework import status, authentication, permissions, serializers, parsers
 from rest_framework.response import Response
 
 import mimetypes
 
-from .models import ExtendedUserProfile, Teacher, TeacherSubject, Student
+from .models import ExtendedUserProfile, Teacher, TeacherSubject, Student, Assignment
 
 
 class TeacherProfileView(APIView):
@@ -83,3 +83,51 @@ class TeacherSubjectStudentView(APIView):
         ]
 
         return Response(return_list)
+
+
+class TeacherAssignmentFileUploadView(APIView):
+    parser_classes = [parsers.FileUploadParser]
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        teacher = Teacher.objects.get(user=request.user)
+        teacher_subject_obj_list = TeacherSubject.objects.filter(teacher_fk=teacher)
+        subject = None
+        print(request.FILES)
+        print(request.META["HTTP_SUBJECT_CODE"])
+
+        for teacher_subject_obj in teacher_subject_obj_list:
+            if teacher_subject_obj.subject_fk.subject_code == int(request.META["HTTP_SUBJECT_CODE"]):
+                subject = teacher_subject_obj.subject_fk
+                break
+
+        assignment = Assignment(subject_fk=subject, assignment_file=request.FILES["file"])
+        assignment.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class TeacherAssignmentListView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        teacher = Teacher.objects.get(user=request.user)
+        teacher_subject_obj_list = TeacherSubject.objects.filter(teacher_fk=teacher)
+
+        subject = None
+        for teacher_subject_obj in teacher_subject_obj_list:
+            if teacher_subject_obj.subject_fk.subject_code == int(request.data["subject_code"]):
+                subject = teacher_subject_obj.subject_fk
+                break
+
+        assignment_list = Assignment.objects.filter(subject_fk=subject)
+
+        return_data = []
+        for assignment in assignment_list:
+            file_path = assignment.assignment_file.name
+            file_name = file_path.split("/")[-1]
+            return_data.append(file_name)
+
+        return Response(return_data)
