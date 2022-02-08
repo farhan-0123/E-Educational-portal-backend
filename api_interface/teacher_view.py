@@ -128,6 +128,23 @@ class TeacherAssignmentListView(APIView):
         for assignment in assignment_list:
             file_path = assignment.assignment_file.name
             file_name = file_path.split("/")[-1]
-            return_data.append(file_name)
+            return_data.append(
+                {
+                    "id": assignment.assignment_pk,
+                    "file_name": file_name,
+                    "date_created": assignment.assignment_date
+                }
+            )
 
         return Response(return_data)
+
+
+class TeacherAssignmentFileDownloadView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        assignment = Assignment.objects.get(assignment_pk=request.data["id"])
+        type_ = mimetypes.guess_type(assignment.assignment_file.name)
+
+        return HttpResponse(assignment.assignment_file.open(), content_type=type_[0])

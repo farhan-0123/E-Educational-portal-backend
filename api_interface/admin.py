@@ -10,7 +10,14 @@ class ExtendedUserProfileAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ExtendedUserProfile, ExtendedUserProfileAdmin)
-admin.site.register(Student)
+
+
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ["user", "parent_phone"]
+    list_filter = ['class_fk__branch_fk__branch_name', 'class_fk__semester', "fee_status"]
+
+
+admin.site.register(Student, StudentAdmin)
 
 
 class ClassAdmin(admin.ModelAdmin):
@@ -32,8 +39,7 @@ admin.site.register(Teacher, TeacherAdmin)
 
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ['subject_code', 'subject_name', 'branch', 'semester']
-    ordering = ['subject_name', 'subject_code']
-    list_filter = ['class_fk']
+    list_filter = ['class_fk__branch_fk__branch_name', 'class_fk__semester']
 
     def semester(self, obj):
         return obj.class_fk.semester
@@ -43,7 +49,20 @@ class SubjectAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Subject, SubjectAdmin)
-admin.site.register(Assignment)
+
+
+class AssignmentAdmin(admin.ModelAdmin):
+    list_display = ['subject_fk', 'assignment_date', 'assignment']
+    list_filter = ['assignment_date', 'subject_fk__class_fk__branch_fk__branch_name']
+
+    def assignment(self, obj):
+        file_path = str(obj.assignment_file)
+        file_name = file_path.split("/")[-1]
+        return file_name
+
+
+admin.site.register(Assignment, AssignmentAdmin)
+
 admin.site.register(AssignmentComplete)
 admin.site.register(Exam)
 admin.site.register(ExamResult)
@@ -51,8 +70,15 @@ admin.site.register(Branch)
 
 
 class TeacherSubjectAdmin(admin.ModelAdmin):
-    list_display = ['teacher_fk', 'subject_fk']
+    list_display = ['teacher_fk', 'code', 'subject']
     ordering = ['teacher_fk', 'subject_fk']
+    list_filter = ['subject_fk__class_fk__branch_fk__branch_name', 'subject_fk__class_fk__semester']
+
+    def code(self, obj):
+        return obj.subject_fk.subject_code
+
+    def subject(self, obj):
+        return obj.subject_fk.subject_name
 
 
 admin.site.register(TeacherSubject, TeacherSubjectAdmin)

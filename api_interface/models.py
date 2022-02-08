@@ -115,12 +115,13 @@ def custom_file_path(instance, filename):
 class Assignment(models.Model):
     assignment_pk = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
     subject_fk = models.ForeignKey(Subject, on_delete=models.DO_NOTHING, null=True)
+    assignment_date = models.DateField(auto_now=True)
     assignment_file = models.FileField(upload_to=custom_file_path)
 
     def __str__(self):
         file_path = str(self.assignment_file)
         file_name = file_path.split("/")[-1]
-        return f"{self.subject_fk} File Name: {file_name}"
+        return f"{self.subject_fk} File Name: {file_name} Creation Date: {self.assignment_date}"
 
     def delete(self, using=None, keep_parents=False):
         self.assignment_file.storage.delete(self.assignment_file.name)
