@@ -1,10 +1,10 @@
+import mimetypes
+
 from django.http.response import HttpResponse
 
+from rest_framework import status, authentication, permissions, parsers
 from rest_framework.authtoken.views import APIView
-from rest_framework import status, authentication, permissions, serializers, parsers
 from rest_framework.response import Response
-
-import mimetypes
 
 from .models import ExtendedUserProfile, Teacher, TeacherSubject, Student, Assignment
 
@@ -94,8 +94,6 @@ class TeacherAssignmentFileUploadView(APIView):
         teacher = Teacher.objects.get(user=request.user)
         teacher_subject_obj_list = TeacherSubject.objects.filter(teacher_fk=teacher)
         subject = None
-        print(request.FILES)
-        print(request.META["HTTP_SUBJECT_CODE"])
 
         for teacher_subject_obj in teacher_subject_obj_list:
             if teacher_subject_obj.subject_fk.subject_code == int(request.META["HTTP_SUBJECT_CODE"]):
@@ -113,6 +111,7 @@ class TeacherAssignmentListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        _BASE_URL_PATH = str(request.build_absolute_uri()).replace("teacherassignmentlist/", "assignmentfiledownload/")
         teacher = Teacher.objects.get(user=request.user)
         teacher_subject_obj_list = TeacherSubject.objects.filter(teacher_fk=teacher)
 
@@ -130,6 +129,7 @@ class TeacherAssignmentListView(APIView):
             file_name = file_path.split("/")[-1]
             return_data.append(
                 {
+                    "link": _BASE_URL_PATH + str(assignment.assignment_pk),
                     "id": assignment.assignment_pk,
                     "file_name": file_name,
                     "date_created": assignment.assignment_date
@@ -139,6 +139,7 @@ class TeacherAssignmentListView(APIView):
         return Response(return_data)
 
 
+# Todo : Following class is Deprecated
 class TeacherAssignmentFileDownloadView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]

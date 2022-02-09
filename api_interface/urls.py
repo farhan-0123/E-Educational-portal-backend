@@ -7,7 +7,8 @@ from .views import \
     StudentAuthToken, \
     TeacherAuthToken, \
     AdminAuthToken, \
-    SubjectDetailsLinkView
+    SubjectDetailsLinkView, \
+    assignment_file_download_view
 
 from .student_views import \
     StudentProfileView, \
@@ -33,6 +34,7 @@ urlpatterns = [
     path('auth/teacher/', TeacherAuthToken.as_view()),
     path('auth/admin/', AdminAuthToken.as_view()),
     path('subjectdetailslink/', SubjectDetailsLinkView.as_view()),
+    path('assignmentfiledownload/<uuid:id>', assignment_file_download_view),
 
     # student end points
     path('studentprofile/', StudentProfileView.as_view()),
@@ -46,6 +48,8 @@ urlpatterns = [
     path('teachersubject/', TeacherSubjectView.as_view()),
     path('teachersubjectstudentlist/', TeacherSubjectStudentView.as_view()),
     path('teacherassignmentfileupload/', TeacherAssignmentFileUploadView.as_view()),
+    # Note : if you want to change the url teacherassignmentlist/ you will also have to change TeacherAssignmentListView
+    # as it uses this path as hard coded string.
     path('teacherassignmentlist/', TeacherAssignmentListView.as_view()),
     path('teacherassignmentfiledownload/', TeacherAssignmentFileDownloadView.as_view()),
 
