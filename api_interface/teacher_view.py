@@ -139,6 +139,17 @@ class TeacherAssignmentListView(APIView):
         return Response(return_data)
 
 
+class TeacherAssignmentDeleteView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        assignment = Assignment.objects.get(assignment_pk=request.data["id"])
+        assignment.delete()
+
+        return Response(status=status.HTTP_200_OK)
+
+
 # Todo : Following class is Deprecated
 class TeacherAssignmentFileDownloadView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]

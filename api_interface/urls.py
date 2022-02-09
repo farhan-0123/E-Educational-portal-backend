@@ -23,6 +23,7 @@ from .teacher_view import \
     TeacherSubjectStudentView, \
     TeacherAssignmentFileUploadView, \
     TeacherAssignmentListView, \
+    TeacherAssignmentDeleteView, \
     TeacherAssignmentFileDownloadView
 
 router = routers.DefaultRouter()
@@ -51,6 +52,7 @@ urlpatterns = [
     # Note : if you want to change the url teacherassignmentlist/ you will also have to change TeacherAssignmentListView
     # as it uses this path as hard coded string.
     path('teacherassignmentlist/', TeacherAssignmentListView.as_view()),
+    path('teacherassignmentdelete/', TeacherAssignmentDeleteView.as_view()),
     path('teacherassignmentfiledownload/', TeacherAssignmentFileDownloadView.as_view()),
 
 ]
