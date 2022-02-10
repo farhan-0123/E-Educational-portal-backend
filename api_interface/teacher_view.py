@@ -53,6 +53,9 @@ class TeacherSubjectView(APIView):
                 "subject_photo": teacher_subject_obj.subject_fk.subject_photo_url,
                 "semester": teacher_subject_obj.subject_fk.class_fk.semester,
                 "branch": teacher_subject_obj.subject_fk.class_fk.branch_fk.branch_name,
+                "link": "https://s3-ap-southeast-1.amazonaws.com/gtusitecirculars/Syallbus/"
+                        + str(teacher_subject_obj.subject_fk.subject_code)
+                        + ".pdf",
             } for teacher_subject_obj in teacher_subject_obj_list
         ]
 

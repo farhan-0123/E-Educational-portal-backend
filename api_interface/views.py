@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from .models import ExtendedUserProfile, Assignment
 
 
+# Todo : Deprecated
 class SubjectDetailsLinkView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]

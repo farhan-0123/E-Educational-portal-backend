@@ -15,7 +15,9 @@ from .student_views import \
     StudentAssignmentsView, \
     StudentAssignmentFileView, \
     StudentExamResultView, \
-    StudentSubjectView
+    StudentSubjectView, \
+    StudentSubjectStudentView, \
+    StudentAssignmentListView
 
 from .teacher_view import \
     TeacherProfileView, \
@@ -34,15 +36,21 @@ urlpatterns = [
     path('auth/student/', StudentAuthToken.as_view()),
     path('auth/teacher/', TeacherAuthToken.as_view()),
     path('auth/admin/', AdminAuthToken.as_view()),
+    # Todo : Deprecated
     path('subjectdetailslink/', SubjectDetailsLinkView.as_view()),
+    # End Deprecated
     path('assignmentfiledownload/<uuid:id>', assignment_file_download_view),
 
     # student end points
     path('studentprofile/', StudentProfileView.as_view()),
     path('studentsubject/', StudentSubjectView.as_view()),
+    path('studentsubjectstudent/', StudentSubjectStudentView.as_view()),
+    path('studentassignmentlist/', StudentAssignmentListView.as_view()),
+    # Todo : Deprecated
+    path('studentexamresults/', StudentExamResultView.as_view()),
     path('studentassignments/', StudentAssignmentsView.as_view()),
     path('studentassignmentfile/', StudentAssignmentFileView.as_view()),
-    path('studentexamresults/', StudentExamResultView.as_view()),
+    # End Deprecated
 
     # teacher end points
     path('teacherprofile/', TeacherProfileView.as_view()),

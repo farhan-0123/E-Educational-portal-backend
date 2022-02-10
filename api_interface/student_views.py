@@ -53,12 +53,16 @@ class StudentSubjectView(APIView):
             "subject_code": subject.subject_code,
             "subject_name": subject.subject_name,
             "subject_credits": subject.subject_credits,
-            "subject_photo": subject.subject_photo_url
+            "subject_photo": subject.subject_photo_url,
+            "link": "https://s3-ap-southeast-1.amazonaws.com/gtusitecirculars/Syallbus/"
+                    + str(subject.subject_code)
+                    + ".pdf",
         } for subject in subject_list]
 
         return Response(result_list)
 
 
+# Todo : Deprecated
 class StudentAssignmentsView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]
@@ -76,6 +80,7 @@ class StudentAssignmentsView(APIView):
         return Response(assignments)
 
 
+# Todo : Deprecated
 class StudentAssignmentFileView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]
@@ -86,6 +91,7 @@ class StudentAssignmentFileView(APIView):
             return HttpResponse(assignment_file, content_type=mimetypes.guess_type(assignment_file_path)[0])
 
 
+# Todo : Deprecated
 class StudentExamResultView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]
@@ -109,3 +115,50 @@ class StudentExamResultView(APIView):
             } for result in all_results]
 
         return Response(exam_results)
+
+
+class StudentAssignmentListView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        _BASE_URL_PATH = str(request.build_absolute_uri()).replace("teacherassignmentlist/", "assignmentfiledownload/")
+
+        student = Student.objects.get(user=request.user)
+        subject = Subject.objects.get(class_fk=student.class_fk, subject_code=int(request.data["subject_code"]))
+        assignment_list = Assignment.objects.filter(subject_fk=subject)
+
+        return_data = []
+        for assignment in assignment_list:
+            file_path = assignment.assignment_file.name
+            file_name = file_path.split("/")[-1]
+            return_data.append(
+                {
+                    "link": _BASE_URL_PATH + str(assignment.assignment_pk),
+                    "id": assignment.assignment_pk,
+                    "file_name": file_name,
+                    "date_created": assignment.assignment_date
+                }
+            )
+
+        return Response(return_data)
+
+
+class StudentSubjectStudentView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        student = Student.objects.get(user=request.user)
+        student_list = Student.objects.filter(class_fk=student.class_fk)
+
+        return_list = [
+            {
+                "student_id": student.user.id,
+                "student_first_name": student.user.first_name,
+                "student_last_name": student.user.last_name,
+                "student_email": student.user.email,
+            } for student in student_list
+        ]
+
+        return Response(return_list)
