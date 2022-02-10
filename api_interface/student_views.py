@@ -122,7 +122,7 @@ class StudentAssignmentListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        _BASE_URL_PATH = str(request.build_absolute_uri()).replace("teacherassignmentlist/", "assignmentfiledownload/")
+        _BASE_URL_PATH = str(request.build_absolute_uri()).replace("studentassignmentlist/", "assignmentfiledownload/")
 
         student = Student.objects.get(user=request.user)
         subject = Subject.objects.get(class_fk=student.class_fk, subject_code=int(request.data["subject_code"]))
