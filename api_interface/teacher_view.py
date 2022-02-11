@@ -133,7 +133,7 @@ class TeacherAssignmentListView(APIView):
             return_data.append(
                 {
                     "link": _BASE_URL_PATH + str(assignment.assignment_pk),
-                    "id": assignment.assignment_pk,
+                    "file_id": assignment.assignment_pk,
                     "file_name": file_name,
                     "date_created": assignment.assignment_date
                 }
