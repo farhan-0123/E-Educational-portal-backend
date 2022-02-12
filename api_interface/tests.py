@@ -179,34 +179,3 @@ class StudentAPITestCase(TestCase):
             "[StudentAPITestCase][Testing StudentProfileView] Failed got unexpected data"
         )
         print("[StudentAPITestCase][Testing StudentProfileView] Success got expected data")
-
-    def test_student_subject(self):
-        # Getting required data
-        token = Token.objects.get(user__username="MarilinFydo")
-        expected_data = [{'subject_code': 3110002, 'subject_name': 'English', 'subject_credits': 3,
-                          'subject_photo': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsK6sNyy6Ds6Q-nFnOCBVoK_IaCLJEXeyI6w&usqp=CAU'},
-                         {'subject_code': 3110013, 'subject_name': 'Eng. Graphics & Design', 'subject_credits': 4,
-                          'subject_photo': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwzgcHMUMWvkR-TSpVJavBFoU99bL5XeGjng&usqp=CAU'},
-                         {'subject_code': 3110012, 'subject_name': 'Workshop/Manufacturing', 'subject_credits': 2,
-                          'subject_photo': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2skUx6jpFLLGKbdbB127twSnr8TroMzrMzw&usqp=CAU'},
-                         {'subject_code': 3110015, 'subject_name': 'Mathematics - 2', 'subject_credits': 5,
-                          'subject_photo': 'https://studiousguy.com/wp-content/uploads/2019/10/maths-applications.jpg'},
-                         {'subject_code': 3110011, 'subject_name': 'Physics', 'subject_credits': 4,
-                          'subject_photo': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxAfgg3s1fGVREzJ3fttCJvFaQboftQpEu0A&usqp=CAU'},
-                         {'subject_code': 3110004, 'subject_name': 'Basic Civil Engineering', 'subject_credits': 4,
-                          'subject_photo': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2HXcemtM9GZKSrsWI6BZPWYOemm13FCtV5A&usqp=CAU'}]
-
-        # Setup
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION="Token " + token.key)
-
-        # Testing api
-        subject_list = client.get(path="/api/studentsubject/")
-
-        # Validating data
-        self.assertEqual(
-            subject_list.data,
-            expected_data,
-            "[StudentAPITestCase][Testing StudentSubjectView] Failed got unexpected data"
-        )
-        print("[StudentAPITestCase][Testing StudentSubjectView] Success got expected data")

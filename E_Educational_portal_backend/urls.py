@@ -18,6 +18,8 @@ from django.urls import path
 from django.conf.urls import include
 
 urlpatterns = [
+    path('', include('core.chat.urls')),
     path('admin/', admin.site.urls),
     path('api/', include('api_interface.urls')),
+    path('api/', include(('core.routers', 'core-api'), namespace='core-api')),
 ]
