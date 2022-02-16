@@ -5,9 +5,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Zoom Clone</title>
+    <style>
+        body{
+            margin-top: 100px;
+            align-items: center;
+            text-align: center;
+            background-color:antiquewhite;
+        }
+        label{
+            display: block;
+            font: inherit;
+            font-size: 20px;
+            text-align: center;
+        }
+        input{
+            display: block;
+            padding: 5px;
+            width: 300px;
+            border: 1px solid black;
+            margin: 10px 0px 10px 640px;
+            align-items: center;
+            text-align: center;
+            border-radius: 5px;
+        }
+        button{
+            padding: 10px;
+            background-color: rgb(37, 167, 241);
+            color: white;
+            border: 1px solid rgb(37, 167, 241);
+            margin: 10px;
+            border-radius: 5px;
+        }
+    </style>
+
 </head>
-<body>
-    <div>
+<body >
+    <div className="join_meeting">
         <label id="label-username" for="username">Username</label><input id="username" required/>
         <label id="label-roomId" for="roomId">Meeting ID</label><input id="roomId" required />
 
