@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import ExtendedUserProfile, Student, Class, Teacher, Subject, Assignment, AssignmentComplete, Exam, \
-    ExamResult, Branch, TeacherSubject
+    ExamResult, Branch, TeacherSubject, Chat
 
 
 class ExtendedUserProfileAdmin(admin.ModelAdmin):
@@ -82,3 +82,12 @@ class TeacherSubjectAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TeacherSubject, TeacherSubjectAdmin)
+
+
+class ChatAdmin(admin.ModelAdmin):
+    list_display = ["subject_fk", "user_fk", "chat_text", "time_stamp"]
+    list_filter = ['subject_fk__class_fk__branch_fk__branch_name', 'subject_fk__class_fk__semester', "time_stamp"]
+    ordering = ["time_stamp"]
+
+
+admin.site.register(Chat, ChatAdmin)

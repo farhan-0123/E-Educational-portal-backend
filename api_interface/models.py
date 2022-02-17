@@ -181,3 +181,13 @@ class ExamResult(models.Model):
     def __str__(self):
         return f"Student {self.student_fk.first_name} {self.student_fk.last_name} got {self.result}" \
                f" from Exam {self.exam_fk.exam_title} "
+
+
+class Chat(models.Model):
+    subject_fk = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    user_fk = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    chat_text = models.CharField(max_length=500)
+    time_stamp = models.DateTimeField(auto_now=True, editable=False)
+
+    def __str__(self):
+        return f"{self.subject_fk} {self.time_stamp}"

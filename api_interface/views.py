@@ -1,6 +1,6 @@
 import mimetypes
 
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseBadRequest
 
 from rest_framework import authentication, permissions
 from rest_framework.authtoken.models import Token
@@ -8,7 +8,7 @@ from rest_framework.authtoken.views import ObtainAuthToken, APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .models import ExtendedUserProfile, Assignment
+from .models import ExtendedUserProfile, Assignment, Chat, Subject, Student
 
 
 # Todo : Deprecated
@@ -74,10 +74,38 @@ class AdminAuthToken(ObtainAuthToken):
             })
 
 
+class ChatView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = request.user
+            student = Student.objects.get(user=user)
+            subject = Subject.objects.get(subject_code=request.data["subject_code"], class_fk=student.class_fk)
+
+            if request.data.__contains__("chat"):
+                chat = Chat(subject_fk=subject, user_fk=user, chat_text=request.data["chat"])
+                chat.save()
+
+            chat_list = Chat.objects.filter(subject_fk=subject)
+
+            return_data = [
+                {
+                    "username": chat.user_fk.username,
+                    "chat": chat.chat_text
+                } for chat in chat_list
+            ]
+
+            return Response(return_data)
+        except KeyError:
+            return HttpResponseBadRequest("Bad Request")
+
+
 @api_view()
 @permission_classes([permissions.AllowAny, ])
-def assignment_file_download_view(request, id):
-    assignment = Assignment.objects.get(assignment_pk=id)
+def assignment_file_download_view(request, assignment_id):
+    assignment = Assignment.objects.get(assignment_pk=assignment_id)
     type_ = mimetypes.guess_type(assignment.assignment_file.name)
 
     return HttpResponse(assignment.assignment_file.open(), content_type=type_[0])

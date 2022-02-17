@@ -8,7 +8,8 @@ from .views import \
     TeacherAuthToken, \
     AdminAuthToken, \
     SubjectDetailsLinkView, \
-    assignment_file_download_view
+    assignment_file_download_view, \
+    ChatView
 
 from .student_views import \
     StudentProfileView, \
@@ -36,10 +37,11 @@ urlpatterns = [
     path('auth/student/', StudentAuthToken.as_view()),
     path('auth/teacher/', TeacherAuthToken.as_view()),
     path('auth/admin/', AdminAuthToken.as_view()),
+    path('assignmentfiledownload/<uuid:id>', assignment_file_download_view),
+    path('chat/', ChatView.as_view()),
     # Todo : Deprecated
     path('subjectdetailslink/', SubjectDetailsLinkView.as_view()),
     # End Deprecated
-    path('assignmentfiledownload/<uuid:id>', assignment_file_download_view),
 
     # student end points
     path('studentprofile/', StudentProfileView.as_view()),
