@@ -8,7 +8,7 @@ from rest_framework.authtoken.views import ObtainAuthToken, APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .models import ExtendedUserProfile, Assignment, Chat, Subject, Student
+from .models import ExtendedUserProfile, Assignment, Chat, Subject, Student, Teacher, TeacherSubject
 
 
 # Todo : Deprecated
@@ -81,8 +81,20 @@ class ChatView(APIView):
     def post(self, request):
         try:
             user = request.user
-            student = Student.objects.get(user=user)
-            subject = Subject.objects.get(subject_code=request.data["subject_code"], class_fk=student.class_fk)
+            extra = ExtendedUserProfile.objects.get(user=user)
+            if extra.designation == "S":
+                student = Student.objects.get(user=user)
+                class_ = student.class_fk
+            elif extra.designation == "T":
+                teacher = Teacher.objects.get(user=user)
+                teacher_subject_obj_list = TeacherSubject.objects.filter(teacher_fk=teacher)
+                class_ = None
+                for teacher_subject_obj in teacher_subject_obj_list:
+                    if teacher_subject_obj.subject_fk.subject_code == int(request.data["subject_code"]):
+                        class_ = teacher_subject_obj.subject_fk.class_fk
+                        break
+
+            subject = Subject.objects.get(subject_code=request.data["subject_code"], class_fk=class_)
 
             if request.data.__contains__("chat"):
                 chat = Chat(subject_fk=subject, user_fk=user, chat_text=request.data["chat"])
