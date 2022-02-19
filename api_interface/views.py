@@ -101,13 +101,23 @@ class ChatView(APIView):
                 chat.save()
 
             chat_list = Chat.objects.filter(subject_fk=subject)
+            return_data = []
 
-            return_data = [
-                {
-                    "username": chat.user_fk.username,
-                    "chat": chat.chat_text
-                } for chat in chat_list
-            ]
+            for chat in chat_list:
+                if not chat.user_fk.username == user.username:
+                    return_data.append(
+                        {
+                            "username": chat.user_fk.username,
+                            "chat": chat.chat_text
+                        }
+                    )
+                else:
+                    return_data.append(
+                        {
+                            "username": "You",
+                            "chat": chat.chat_text
+                        }
+                    )
 
             return Response(return_data)
         except KeyError:
