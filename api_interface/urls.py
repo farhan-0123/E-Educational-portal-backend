@@ -29,6 +29,8 @@ from .teacher_view import \
     TeacherAssignmentDeleteView, \
     TeacherAssignmentFileDownloadView
 
+from .schedular import start_scheduler
+
 router = routers.DefaultRouter()
 
 urlpatterns = [
@@ -63,6 +65,9 @@ urlpatterns = [
     # as it uses this path as hard coded string.
     path('teacherassignmentlist/', TeacherAssignmentListView.as_view()),
     path('teacherassignmentdelete/', TeacherAssignmentDeleteView.as_view()),
+    # Todo: Deprecated
     path('teacherassignmentfiledownload/', TeacherAssignmentFileDownloadView.as_view()),
 
 ]
+
+start_scheduler()
