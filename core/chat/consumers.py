@@ -1,13 +1,27 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 import json
+from api_interface.models import Student
+from threading import Thread
 from core.room.models import Room
+
+
+def present_add(username):
+    try:
+        student = Student.objects.get(user__username=username)
+        print(username + " has Joined " + str(student.present_days) + " Present Days")
+        student.present_days += 1
+        student.save()
+
+    except:
+        print("Ether a teacher or admin or someone unknown has joined.")
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self, **kwargs):
         self.room_name = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = self.room_name
-
+        t = Thread(target=present_add, kwargs={"username": self.scope['url_route']['kwargs']['username']})
+        t.start()
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -15,6 +29,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         )
 
         await self.accept()
+        t.join()
 
     async def disconnect(self, code):
         await self.channel_layer.group_discard(
@@ -56,5 +71,5 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         receive_dict = event["receive_dict"]
 
         await self.send(
-                text_data=json.dumps(receive_dict)
-            )
+            text_data=json.dumps(receive_dict)
+        )

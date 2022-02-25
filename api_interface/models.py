@@ -53,6 +53,7 @@ class Class(models.Model):
             MinValueValidator(limit_value=1, message="Semester cannot be more less 1")
         ],
     )
+    days_count = models.IntegerField(default=25)
 
     def __str__(self):
         return f"Branch : {self.branch_fk.branch_name} and Semester: {self.semester}"

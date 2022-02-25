@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'api_interface.apps.ApiInterfaceConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'schedule',
 
     'corsheaders',
     'channels',
