@@ -1,13 +1,13 @@
 from django.http.response import HttpResponse
 
 from rest_framework.authtoken.views import APIView
-from rest_framework import authentication, permissions
+from rest_framework import status, authentication, permissions
 from rest_framework.response import Response
 
 import mimetypes
 
-from .models import ExtendedUserProfile, Assignment, AssignmentComplete, Exam, ExamResult, Teacher, Student, Class, \
-    Subject, Branch
+from .models import ExtendedUserProfile, Assignment, AssignmentComplete, Student, Class, \
+    Subject, Branch, Exam, ExamQuestion, ExamOption, ExamResult
 
 
 class StudentProfileView(APIView):
@@ -62,61 +62,6 @@ class StudentSubjectView(APIView):
         return Response(result_list)
 
 
-# Todo : Deprecated
-class StudentAssignmentsView(APIView):
-    authentication_classes = [authentication.TokenAuthentication, ]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        assignments = [
-            {
-                "assignment_id": assignment.assignment_fk.assignment_pk,
-                "assignment_title": assignment.assignment_fk.assignment_title,
-                "due_date": assignment.assignment_fk.due_date,
-                "complete": assignment.complete,
-                "marks": assignment.marks,
-            } for assignment in AssignmentComplete.objects.all().filter(student_fk=request.user)]
-
-        return Response(assignments)
-
-
-# Todo : Deprecated
-class StudentAssignmentFileView(APIView):
-    authentication_classes = [authentication.TokenAuthentication, ]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request):
-        assignment_file_path = str(Assignment.objects.get(assignment_pk=request.data["assignment_id"]).assignment_file)
-        with open(assignment_file_path, "rb") as assignment_file:
-            return HttpResponse(assignment_file, content_type=mimetypes.guess_type(assignment_file_path)[0])
-
-
-# Todo : Deprecated
-class StudentExamResultView(APIView):
-    authentication_classes = [authentication.TokenAuthentication, ]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request):
-        branch_id = Branch.objects.get(branch_name=request.data["branch_name"])
-        print(branch_id)
-        class_id = Class.objects.filter(semester=request.data["semester"]).filter(branch_fk=branch_id)
-        print(class_id[0])
-        all_results = ExamResult.objects.filter(student_fk=request.user)
-        print(all_results)
-        all_results = ExamResult.objects.filter(class_fk=class_id[0])
-        print(all_results)
-        exam_results = [
-            {
-                "subject_name": result.exam_fk.subject_fk.subject_name,
-                "exam_title": result.exam_fk.exam_title,
-                "exam_date": result.exam_fk.exam_date,
-                "max_marks": result.exam_fk.max_marks,
-                "marks": result.result,
-            } for result in all_results]
-
-        return Response(exam_results)
-
-
 class StudentAssignmentListView(APIView):
     authentication_classes = [authentication.TokenAuthentication, ]
     permission_classes = [permissions.IsAuthenticated]
@@ -162,3 +107,60 @@ class StudentSubjectStudentView(APIView):
         ]
 
         return Response(return_list)
+
+
+class StudentExamView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        exam = Exam.objects.get(exam_id="58d6eb6b-31e4-421a-a405-921c5bb6ae6f")
+
+        question_queryset = ExamQuestion.objects.filter(exam_fk=exam)
+
+        return_list = []
+
+        for question in question_queryset:
+            option_queryset = ExamOption.objects.filter(exam_question_fk=question)
+            return_list.append(
+                {
+                    "question": question.question,
+                    "options": [
+                        {
+                            "text": option.option_text,
+                            "isAnswer": option.is_this_answer,
+                        }
+                        for option in option_queryset
+                    ]
+                }
+            )
+        return Response(return_list)
+
+
+# Todo : Deprecated
+class StudentAssignmentsView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        assignments = [
+            {
+                "assignment_id": assignment.assignment_fk.assignment_pk,
+                "assignment_title": assignment.assignment_fk.assignment_title,
+                "due_date": assignment.assignment_fk.due_date,
+                "complete": assignment.complete,
+                "marks": assignment.marks,
+            } for assignment in AssignmentComplete.objects.filter(student_fk=request.user)]
+
+        return Response(assignments)
+
+
+# Todo : Deprecated
+class StudentAssignmentFileView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        assignment_file_path = str(Assignment.objects.get(assignment_pk=request.data["assignment_id"]).assignment_file)
+        with open(assignment_file_path, "rb") as assignment_file:
+            return HttpResponse(assignment_file, content_type=mimetypes.guess_type(assignment_file_path)[0])

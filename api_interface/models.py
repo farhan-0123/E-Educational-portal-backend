@@ -151,9 +151,8 @@ class AssignmentComplete(models.Model):
 
 
 class Exam(models.Model):
-    exam = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
+    exam_id = models.UUIDField(editable=False, primary_key=True, default=uuid.uuid4)
     subject_fk = models.ForeignKey(Subject, on_delete=models.DO_NOTHING, null=True)
-    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING, null=True)
     exam_title = models.CharField(max_length=150)
     max_marks = models.IntegerField(
         validators=[
@@ -162,16 +161,31 @@ class Exam(models.Model):
         ]
     )
     exam_date = models.DateField()
-    exam_file = models.FileField(upload_to="student_exams/")
 
     def __str__(self):
         return f"{self.subject_fk.subject_name} {self.exam_title} {self.exam_date}"
 
 
+class ExamQuestion(models.Model):
+    exam_fk = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    question = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return f"{self.question}"
+
+
+class ExamOption(models.Model):
+    exam_question_fk = models.ForeignKey(ExamQuestion, on_delete=models.CASCADE)
+    option_text = models.CharField(max_length=200)
+    is_this_answer = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.exam_question_fk.question} {self.option_text} {self.is_this_answer}"
+
+
 class ExamResult(models.Model):
-    exam_fk = models.ForeignKey(Exam, on_delete=models.DO_NOTHING)
+    exam_fk = models.ForeignKey(Exam, on_delete=models.CASCADE)
     student_fk = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING, null=True)
     result = models.IntegerField(
         validators=[
             MaxValueValidator(limit_value=200, message="Value more than 200"),

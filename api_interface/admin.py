@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import ExtendedUserProfile, Student, Class, Teacher, Subject, Assignment, AssignmentComplete, Exam, \
-    ExamResult, Branch, TeacherSubject, Chat
+    ExamResult, Branch, TeacherSubject, Chat, ExamQuestion, ExamOption
 
 
 class ExtendedUserProfileAdmin(admin.ModelAdmin):
@@ -62,10 +62,13 @@ class AssignmentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Assignment, AssignmentAdmin)
-
 admin.site.register(AssignmentComplete)
+
 admin.site.register(Exam)
+admin.site.register(ExamQuestion)
+admin.site.register(ExamOption)
 admin.site.register(ExamResult)
+
 admin.site.register(Branch)
 
 
