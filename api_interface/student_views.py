@@ -114,7 +114,7 @@ class StudentExamView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        exam = Exam.objects.get(exam_id="58d6eb6b-31e4-421a-a405-921c5bb6ae6f")
+        exam = Exam.objects.all()[0]
 
         question_queryset = ExamQuestion.objects.filter(exam_fk=exam)
 
