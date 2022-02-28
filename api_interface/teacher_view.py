@@ -166,28 +166,28 @@ class TeacherExamView(APIView):
         option_a = ExamOption(
             exam_question_fk=question,
             option_text=request.data["optionA"],
-            is_this_answer=True if request.data["correctAns"] == "A" else False,
+            is_this_answer=True if request.data["correctAns"].capitalize() == "A" else False,
         )
         option_a.save()
 
         option_b = ExamOption(
             exam_question_fk=question,
             option_text=request.data["optionB"],
-            is_this_answer=True if request.data["correctAns"] == "B" else False,
+            is_this_answer=True if request.data["correctAns"].capitalize() == "B" else False,
         )
         option_b.save()
 
         option_c = ExamOption(
             exam_question_fk=question,
             option_text=request.data["optionC"],
-            is_this_answer=True if request.data["correctAns"] == "C" else False,
+            is_this_answer=True if request.data["correctAns"].capitalize() == "C" else False,
         )
         option_c.save()
 
         option_d = ExamOption(
             exam_question_fk=question,
             option_text=request.data["optionD"],
-            is_this_answer=True if request.data["correctAns"] == "D" else False,
+            is_this_answer=True if request.data["correctAns"].capitalize() == "D" else False,
         )
         option_d.save()
 
