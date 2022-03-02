@@ -187,6 +187,7 @@ class ExamResult(models.Model):
     date = models.DateField(default=Exam.objects.all()[0].exam_date, editable=False)
     student_fk = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     exam_complete = models.BooleanField()
+    previous_question_id = models.IntegerField()
     result = models.IntegerField(
         validators=[
             MaxValueValidator(limit_value=200, message="Value more than 200"),
