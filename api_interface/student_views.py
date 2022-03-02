@@ -117,24 +117,123 @@ class StudentExamView(APIView):
         exam = Exam.objects.all()[0]
 
         question_queryset = ExamQuestion.objects.filter(exam_fk=exam)
-
+        question_option = ExamOption.objects.all()
         return_list = []
 
         for question in question_queryset:
-            option_queryset = ExamOption.objects.filter(exam_question_fk=question)
+            option_queryset = question_option.filter(exam_question_fk=question)
+            answer = ["A", "B", "C", "D"]
+            count = 0
+
+            for option in option_queryset:
+                if option.is_this_answer:
+                    break
+                count += 1
+
             return_list.append(
                 {
                     "question": question.question,
-                    "options": [
-                        {
-                            "text": option.option_text,
-                            "isAnswer": option.is_this_answer,
-                        }
-                        for option in option_queryset
-                    ]
+                    "optionA": option_queryset[0].option_text,
+                    "optionB": option_queryset[1].option_text,
+                    "optionC": option_queryset[2].option_text,
+                    "optionD": option_queryset[3].option_text,
+                    "correctAns": answer[count]
                 }
             )
+
         return Response(return_list)
+
+
+ANSWER_OPTION = ['A', 'B', 'C', 'D']
+
+
+class StudentTestCheckView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        exam = Exam.objects.all()[0]
+
+        if ExamResult.objects.filter(date=exam.exam_date, student_fk=request.user).count() == 1:
+            if ExamResult.objects.get(date=exam.exam_date, student_fk=request.user).exam_complete:
+                return Response("Exam Already Taken")
+
+        if request.data.__contains__("StartExam"):
+            print("Entered in Start Exam Condition")
+            ExamResult(student_fk=request.user, exam_complete=False, result=0).save()
+            question = ExamQuestion.objects.all()[0]
+            option_queryset = ExamOption.objects.filter(exam_question_fk=question)
+
+            return_data = {
+                "question_id": question.id,
+                "question": question.question,
+                "optionA": option_queryset[0].option_text,
+                "optionB": option_queryset[1].option_text,
+                "optionC": option_queryset[2].option_text,
+                "optionD": option_queryset[3].option_text
+            }
+
+            return Response(return_data)
+
+        if request.data.__contains__("question_id"):
+            print("Entered in next question condition")
+            question_list = ExamQuestion.objects.all()
+            current_question = question_list.get(id=request.data["question_id"])
+            option_queryset = ExamOption.objects.filter(exam_question_fk=current_question)
+
+            if option_queryset[ANSWER_OPTION.index(request.data["answer"])].is_this_answer:
+                result_obj = ExamResult.objects.get(date=exam.exam_date, student_fk=request.user)
+                result_obj.result += 1
+                result_obj.save()
+
+            encounter = False
+
+            for question in question_list:
+                if encounter:
+                    option_queryset = ExamOption.objects.filter(exam_question_fk=question)
+
+                    return_data = {
+                        "question_id": question.id,
+                        "question": question.question,
+                        "optionA": option_queryset[0].option_text,
+                        "optionB": option_queryset[1].option_text,
+                        "optionC": option_queryset[2].option_text,
+                        "optionD": option_queryset[3].option_text
+                    }
+
+                    return Response(return_data)
+
+                if question.id == request.data["question_id"]:
+                    encounter = True
+
+            result_obj = ExamResult.objects.get(date=exam.exam_date, student_fk=request.user)
+            result_obj.exam_complete = True
+            result_obj.save()
+
+            return Response("Exam Complete")
+
+
+class StudentResultSaveView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        exam = Exam.objects.all()[0]
+
+        has_student_already_given_exam = ExamResult.objects.filter(
+            student_fk=request.user,
+            date=exam.exam_date
+        ).count()
+
+        if has_student_already_given_exam == 0:
+            ExamResult(student_fk=request.user, result=request.data["result"]).save()
+            return Response(status=status.HTTP_200_OK)
+
+        elif has_student_already_given_exam == 1:
+            return Response("Already Given Exam")
+
+        else:
+            return Response("Something's wrong")
 
 
 # Todo : Deprecated

@@ -1,5 +1,5 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from .models import Chat, ExamQuestion
+from .models import Chat, ExamQuestion, Exam
 from django.utils import timezone
 
 
@@ -10,9 +10,12 @@ def chat_delete():
 
 
 def exam_delete():
-    from datetime import datetime
+    from datetime import datetime, date
     print("SCHEDULER Deleting the Exam...", datetime.now())
     ExamQuestion.objects.all().delete()
+    exam = Exam.objects.all()[0]
+    exam.exam_date = date.today()
+    exam.save()
 
 
 def start_scheduler():

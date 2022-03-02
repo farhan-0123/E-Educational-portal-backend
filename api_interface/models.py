@@ -184,8 +184,9 @@ class ExamOption(models.Model):
 
 
 class ExamResult(models.Model):
-    exam_fk = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    date = models.DateField(default=Exam.objects.all()[0].exam_date, editable=False)
     student_fk = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    exam_complete = models.BooleanField()
     result = models.IntegerField(
         validators=[
             MaxValueValidator(limit_value=200, message="Value more than 200"),
@@ -194,8 +195,7 @@ class ExamResult(models.Model):
     )
 
     def __str__(self):
-        return f"Student {self.student_fk.first_name} {self.student_fk.last_name} got {self.result}" \
-               f" from Exam {self.exam_fk.exam_title} "
+        return f"Student {self.student_fk.first_name} Date: {self.date} Result: {self.result}"
 
 
 class Chat(models.Model):

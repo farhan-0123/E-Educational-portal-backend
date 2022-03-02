@@ -193,6 +193,36 @@ class TeacherExamView(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
+    def get(self, request):
+        exam = Exam.objects.all()[0]
+
+        question_queryset = ExamQuestion.objects.filter(exam_fk=exam)
+        question_option = ExamOption.objects.all()
+        return_list = []
+
+        for question in question_queryset:
+            option_queryset = question_option.filter(exam_question_fk=question)
+            answer = ["A", "B", "C", "D"]
+            count = 0
+
+            for option in option_queryset:
+                if option.is_this_answer:
+                    break
+                count += 1
+
+            return_list.append(
+                {
+                    "question": question.question,
+                    "optionA": option_queryset[0].option_text,
+                    "optionB": option_queryset[1].option_text,
+                    "optionC": option_queryset[2].option_text,
+                    "optionD": option_queryset[3].option_text,
+                    "correctAns": answer[count]
+                }
+            )
+
+        return Response(return_list)
+
 
 # Todo : Following class is Deprecated
 class TeacherAssignmentFileDownloadView(APIView):

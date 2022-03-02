@@ -18,7 +18,9 @@ from .student_views import \
     StudentSubjectView, \
     StudentSubjectStudentView, \
     StudentAssignmentListView, \
-    StudentExamView
+    StudentExamView, \
+    StudentResultSaveView, \
+    StudentTestCheckView
 
 from .teacher_view import \
     TeacherProfileView, \
@@ -52,6 +54,8 @@ urlpatterns = [
     path('studentsubjectstudent/', StudentSubjectStudentView.as_view()),
     path('studentassignmentlist/', StudentAssignmentListView.as_view()),
     path('studentexam/', StudentExamView.as_view()),
+    path('savestudentresult/', StudentResultSaveView.as_view()),
+    path('studenttestcheck/', StudentTestCheckView.as_view()),
     # Todo : Deprecated
     path('studentassignments/', StudentAssignmentsView.as_view()),
     path('studentassignmentfile/', StudentAssignmentFileView.as_view()),
