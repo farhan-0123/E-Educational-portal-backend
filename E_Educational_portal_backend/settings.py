@@ -104,6 +104,7 @@ CORS_ORIGIN_WHITELIST = [
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "Subject-Code",
     "Content-Disposition",
+    "Assignment-Code",
 ]
 
 # Database

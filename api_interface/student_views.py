@@ -1,7 +1,7 @@
 from django.http.response import HttpResponse
 
 from rest_framework.authtoken.views import APIView
-from rest_framework import status, authentication, permissions
+from rest_framework import status, authentication, permissions, parsers
 from rest_framework.response import Response
 
 import mimetypes
@@ -243,6 +243,26 @@ class StudentResultSaveView(APIView):
 
         else:
             return Response("Something's wrong")
+
+
+class StudentAssignmentFileUploadView(APIView):
+    parser_classes = [parsers.FileUploadParser]
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        student = Student.objects.get(user=request.user)
+        assignment = Assignment.objects.get(assignment_pk=request.META["HTTP_ASSIGNMENT_CODE"])
+
+        assignmentcomplete = AssignmentComplete(
+            assignment_fk=assignment,
+            student_fk=student.user,
+            complete=True,
+            assignment_file=request.FILES["file"]
+        )
+        assignmentcomplete.save()
+
+        return Response(status=status.HTTP_200_OK)
 
 
 # Todo : Deprecated

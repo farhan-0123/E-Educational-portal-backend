@@ -11,6 +11,7 @@
 /local_tools/*
 local_tools
 student_assignments
+student_submitted_assignments
 db.sqlite3
 db.json
 __pycache__/*
