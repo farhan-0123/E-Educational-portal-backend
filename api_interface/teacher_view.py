@@ -6,7 +6,8 @@ from rest_framework import status, authentication, permissions, parsers
 from rest_framework.authtoken.views import APIView
 from rest_framework.response import Response
 
-from .models import ExtendedUserProfile, Teacher, TeacherSubject, Student, Assignment, Exam, ExamOption, ExamQuestion
+from .models import ExtendedUserProfile, Teacher, TeacherSubject, Student, Assignment, Exam, ExamOption, ExamQuestion, \
+    AssignmentComplete
 
 
 class TeacherProfileView(APIView):
@@ -222,6 +223,56 @@ class TeacherExamView(APIView):
             )
 
         return Response(return_list)
+
+
+class TeacherStudentAssignmentView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        _BASE_URL_PATH = str(request.build_absolute_uri()).replace("teacherstudentassignment/",
+                                                                   "studentassignmentfiledownload/")
+        assignment_id = request.data["file_id"]
+        assignment = Assignment.objects.get(assignment_pk=assignment_id)
+        student_queryset = Student.objects.filter(class_fk=assignment.subject_fk.class_fk)
+        complete_assignments_query_set = AssignmentComplete.objects.filter(assignment_fk=assignment)
+
+        return_data = []
+
+        for student in student_queryset:
+            student_assignment_query_set = complete_assignments_query_set.filter(student_fk=student.user)
+
+            if len(student_assignment_query_set) == 1:
+                file_path = student_assignment_query_set[0].assignment_file.name
+                file_name = file_path.split("/")[-1]
+
+                return_data.append(
+                    {
+                        "complete": True,
+                        "link": _BASE_URL_PATH + str(student_assignment_query_set[0].assignment_complete_pk),
+                        "file_name": file_name,
+                        "student_id": student.user.id,
+                        "student_first_name": student.user.first_name,
+                        "student_last_name": student.user.last_name,
+                        "student_email": student.user.email
+                    }
+                )
+            elif len(student_assignment_query_set) == 0:
+                return_data.append(
+                    {
+                        "complete": False,
+                        "link": "",
+                        "file_name": "",
+                        "student_id": student.user.id,
+                        "student_first_name": student.user.first_name,
+                        "student_last_name": student.user.last_name,
+                        "student_email": student.user.email
+                    }
+                )
+            else:
+                return Response("Something went wrong")
+
+        return Response(return_data)
 
 
 # Todo : Following class is Deprecated

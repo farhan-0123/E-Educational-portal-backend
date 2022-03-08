@@ -9,7 +9,8 @@ from .views import \
     AdminAuthToken, \
     SubjectDetailsLinkView, \
     assignment_file_download_view, \
-    ChatView
+    ChatView, \
+    student_assignment_file_download_view
 
 from .student_views import \
     StudentProfileView, \
@@ -30,7 +31,8 @@ from .teacher_view import \
     TeacherAssignmentListView, \
     TeacherAssignmentDeleteView, \
     TeacherAssignmentFileDownloadView, \
-    TeacherExamView
+    TeacherExamView, \
+    TeacherStudentAssignmentView
 
 from .schedular import start_scheduler
 
@@ -42,7 +44,8 @@ urlpatterns = [
     path('auth/student/', StudentAuthToken.as_view()),
     path('auth/teacher/', TeacherAuthToken.as_view()),
     path('auth/admin/', AdminAuthToken.as_view()),
-    path('assignmentfiledownload/<uuid:id>', assignment_file_download_view),
+    path('assignmentfiledownload/<uuid:assignment_id>', assignment_file_download_view),
+    path('studentassignmentfiledownload/<uuid:assignment_id>', student_assignment_file_download_view),
     path('chat/', ChatView.as_view()),
     # Todo : Deprecated
     path('subjectdetailslink/', SubjectDetailsLinkView.as_view()),
@@ -71,6 +74,7 @@ urlpatterns = [
     path('teacherassignmentlist/', TeacherAssignmentListView.as_view()),
     path('teacherassignmentdelete/', TeacherAssignmentDeleteView.as_view()),
     path('teacherexam/', TeacherExamView.as_view()),
+    path('teacherstudentassignment/', TeacherStudentAssignmentView.as_view()),
     # Todo: Deprecated
     path('teacherassignmentfiledownload/', TeacherAssignmentFileDownloadView.as_view()),
 

@@ -8,7 +8,7 @@ from rest_framework.authtoken.views import ObtainAuthToken, APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .models import ExtendedUserProfile, Assignment, Chat, Subject, Student, Teacher, TeacherSubject
+from .models import ExtendedUserProfile, Assignment, Chat, Subject, Student, Teacher, TeacherSubject, AssignmentComplete
 
 
 # Todo : Deprecated
@@ -128,6 +128,15 @@ class ChatView(APIView):
 @permission_classes([permissions.AllowAny, ])
 def assignment_file_download_view(request, assignment_id):
     assignment = Assignment.objects.get(assignment_pk=assignment_id)
+    type_ = mimetypes.guess_type(assignment.assignment_file.name)
+
+    return HttpResponse(assignment.assignment_file.open(), content_type=type_[0])
+
+
+@api_view()
+@permission_classes([permissions.AllowAny, ])
+def student_assignment_file_download_view(request, assignment_id):
+    assignment = AssignmentComplete.objects.get(assignment_complete_pk=assignment_id)
     type_ = mimetypes.guess_type(assignment.assignment_file.name)
 
     return HttpResponse(assignment.assignment_file.open(), content_type=type_[0])

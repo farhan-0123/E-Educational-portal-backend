@@ -129,25 +129,30 @@ class Assignment(models.Model):
         super().delete()
 
 
+def custom_file_path_2(instance, filename):
+    return "/".join([
+        "student_submitted_assignments",
+        instance.assignment_fk.subject_fk.class_fk.branch_fk.branch_name,
+        str(instance.assignment_fk.subject_fk.subject_code),
+        datetime.date.today().isoformat(),
+        str(instance.student_fk.id),
+        filename
+    ])
+
+
 class AssignmentComplete(models.Model):
+    assignment_complete_pk = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
     assignment_fk = models.ForeignKey(Assignment, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
-    student_fk = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    class_fk = models.ForeignKey(Class, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING, null=True)
+    student_fk = models.ForeignKey(User, on_delete=models.CASCADE)
     complete = models.BooleanField()
-    marks = models.IntegerField(
-        validators=[
-            MaxValueValidator(limit_value=200, message="Value more than 200"),
-            MinValueValidator(limit_value=0, message="Value less than 0")
-        ]
-    )
+    assignment_file = models.FileField(upload_to=custom_file_path_2)
 
     def __str__(self):
-        if self.complete:
-            return f"Assignment: {self.assignment_fk.assignment_title}" \
-                   f" is completed by {self.student_fk.first_name} {self.student_fk.last_name}"
-        else:
-            return f"Assignment: {self.assignment_fk.assignment_title}" \
-                   f" is not completed by {self.student_fk.first_name} {self.student_fk.last_name}"
+        return f"{self.student_fk.first_name} {self.student_fk.last_name}"
+
+    def delete(self, using=None, keep_parents=False):
+        self.assignment_file.storage.delete(self.assignment_file.name)
+        super().delete()
 
 
 class Exam(models.Model):
