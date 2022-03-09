@@ -77,14 +77,31 @@ class StudentAssignmentListView(APIView):
         for assignment in assignment_list:
             file_path = assignment.assignment_file.name
             file_name = file_path.split("/")[-1]
-            return_data.append(
-                {
-                    "link": _BASE_URL_PATH + str(assignment.assignment_pk),
-                    "file_id": assignment.assignment_pk,
-                    "file_name": file_name,
-                    "date_created": assignment.assignment_date
-                }
-            )
+            assignment_complete_queryset = AssignmentComplete.objects.filter(assignment_fk=assignment,
+                                                                             student_fk=request.user)
+            if len(assignment_complete_queryset) == 1:
+                assignment_file_path = assignment_complete_queryset[0].assignment_file.name
+                assignment_file_name = assignment_file_path.split("/")[-1]
+
+                return_data.append(
+                    {
+                        "link": _BASE_URL_PATH + str(assignment.assignment_pk),
+                        "file_id": assignment_complete_queryset[0].assignment_complete_pk,
+                        "file_name": file_name,
+                        "date_created": assignment.assignment_date,
+                        "submitted_file": assignment_file_name
+                    }
+                )
+            else:
+                return_data.append(
+                    {
+                        "link": _BASE_URL_PATH + str(assignment.assignment_pk),
+                        "file_id": "",
+                        "file_name": file_name,
+                        "date_created": assignment.assignment_date,
+                        "submitted_file": ""
+                    }
+                )
 
         return Response(return_data)
 
@@ -243,6 +260,20 @@ class StudentResultSaveView(APIView):
 
         else:
             return Response("Something's wrong")
+
+
+class StudentAssignmentDeleteView(APIView):
+    authentication_classes = [authentication.TokenAuthentication, ]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        assignment_complete = AssignmentComplete.objects.get(
+            assignment_complete_pk=request.data["id"],
+            student_fk=request.user
+        )
+        assignment_complete.delete()
+
+        return Response(status=status.HTTP_200_OK)
 
 
 class StudentAssignmentFileUploadView(APIView):

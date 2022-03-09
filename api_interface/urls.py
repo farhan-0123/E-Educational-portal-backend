@@ -22,7 +22,8 @@ from .student_views import \
     StudentExamView, \
     StudentResultSaveView, \
     StudentTestCheckView, \
-    StudentAssignmentFileUploadView
+    StudentAssignmentFileUploadView, \
+    StudentAssignmentDeleteView
 
 from .teacher_view import \
     TeacherProfileView, \
@@ -64,6 +65,7 @@ urlpatterns = [
     path('studentassignments/', StudentAssignmentsView.as_view()),
     path('studentassignmentfile/', StudentAssignmentFileView.as_view()),
     path('studentassignmentfileupload/', StudentAssignmentFileUploadView.as_view()),
+    path('studentassignmentdelete/', StudentAssignmentDeleteView.as_view()),
     # End Deprecated
 
     # teacher end points
