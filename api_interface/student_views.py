@@ -286,16 +286,20 @@ class StudentAssignmentFileUploadView(APIView):
     def post(self, request):
         student = Student.objects.get(user=request.user)
         assignment = Assignment.objects.get(assignment_pk=request.META["HTTP_ASSIGNMENT_CODE"])
+        assignment_submitted_queryset = AssignmentComplete.objects.filter(assignment_fk=assignment, student_fk=student.user)
 
-        assignmentcomplete = AssignmentComplete(
-            assignment_fk=assignment,
-            student_fk=student.user,
-            complete=True,
-            assignment_file=request.FILES["file"]
-        )
-        assignmentcomplete.save()
+        if len(assignment_submitted_queryset) == 0:
+            assignmentcomplete = AssignmentComplete(
+                assignment_fk=assignment,
+                student_fk=student.user,
+                complete=True,
+                assignment_file=request.FILES["file"]
+            )
+            assignmentcomplete.save()
 
-        return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response("Already Submitted")
 
 
 # Todo : Deprecated
