@@ -86,20 +86,22 @@ class StudentAssignmentListView(APIView):
                 return_data.append(
                     {
                         "link": _BASE_URL_PATH + str(assignment.assignment_pk),
-                        "file_id": assignment_complete_queryset[0].assignment_complete_pk,
+                        "file_id": assignment.assignment_pk,
                         "file_name": file_name,
                         "date_created": assignment.assignment_date,
-                        "submitted_file": assignment_file_name
+                        "submitted_file": assignment_file_name,
+                        "submitted_file_id": assignment_complete_queryset[0].assignment_complete_pk
                     }
                 )
             else:
                 return_data.append(
                     {
                         "link": _BASE_URL_PATH + str(assignment.assignment_pk),
-                        "file_id": "",
+                        "file_id": assignment.assignment_pk,
                         "file_name": file_name,
                         "date_created": assignment.assignment_date,
-                        "submitted_file": ""
+                        "submitted_file": "",
+                        "submitted_file_id": "",
                     }
                 )
 
