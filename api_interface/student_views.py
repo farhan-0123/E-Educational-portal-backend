@@ -227,7 +227,8 @@ class StudentTestCheckView(APIView):
         if request.data.__contains__("StartExam"):
             question = ExamQuestion.objects.all()[0]
             option_queryset = ExamOption.objects.filter(exam_question_fk=question)
-            ExamResult(student_fk=request.user, exam_complete=False, previous_question_id=question.id, result=0).save()
+            ExamResult(student_fk=request.user, exam_complete=False, previous_question_id=question.id, result=0,
+                       date=Exam.objects.all()[0].exam_date).save()
 
             return_data = {
                 "question_id": question.id,
@@ -286,7 +287,8 @@ class StudentAssignmentFileUploadView(APIView):
     def post(self, request):
         student = Student.objects.get(user=request.user)
         assignment = Assignment.objects.get(assignment_pk=request.META["HTTP_ASSIGNMENT_CODE"])
-        assignment_submitted_queryset = AssignmentComplete.objects.filter(assignment_fk=assignment, student_fk=student.user)
+        assignment_submitted_queryset = AssignmentComplete.objects.filter(assignment_fk=assignment,
+                                                                          student_fk=student.user)
 
         if len(assignment_submitted_queryset) == 0:
             assignmentcomplete = AssignmentComplete(

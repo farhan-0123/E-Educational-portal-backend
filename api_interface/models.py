@@ -142,7 +142,7 @@ def custom_file_path_2(instance, filename):
 
 class AssignmentComplete(models.Model):
     assignment_complete_pk = models.UUIDField(editable=False, default=uuid.uuid4, primary_key=True)
-    assignment_fk = models.ForeignKey(Assignment, rel=models.ManyToOneRel, on_delete=models.DO_NOTHING)
+    assignment_fk = models.ForeignKey(Assignment, rel=models.ManyToOneRel, on_delete=models.CASCADE)
     student_fk = models.ForeignKey(User, on_delete=models.CASCADE)
     complete = models.BooleanField()
     assignment_file = models.FileField(upload_to=custom_file_path_2)
@@ -189,7 +189,7 @@ class ExamOption(models.Model):
 
 
 class ExamResult(models.Model):
-    date = models.DateField(default=Exam.objects.all()[0].exam_date, editable=False)
+    date = models.DateField()
     student_fk = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     exam_complete = models.BooleanField()
     previous_question_id = models.IntegerField()
