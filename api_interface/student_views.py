@@ -6,8 +6,8 @@ from rest_framework.response import Response
 
 import mimetypes
 
-from .models import ExtendedUserProfile, Assignment, AssignmentComplete, Student, Class, \
-    Subject, Branch, Exam, ExamQuestion, ExamOption, ExamResult
+from .models import ExtendedUserProfile, Assignment, AssignmentComplete, Student, Subject, Exam, ExamQuestion, \
+    ExamOption, ExamResult, StudentSubjectAttendance
 
 
 class StudentProfileView(APIView):
@@ -17,6 +17,13 @@ class StudentProfileView(APIView):
     def get(self, request, *args, **kwargs):
         extra_user_detail = ExtendedUserProfile.objects.get(user=request.user)
         student_details = Student.objects.get(user=request.user)
+        attendance = []
+
+        for subject in Subject.objects.filter(class_fk=student_details.class_fk):
+            attendance.append({
+                "name": subject.subject_name,
+                "value": StudentSubjectAttendance.objects.get(student_fk=request.user, subject_fk=subject).attendance
+            })
 
         user_details = {
             "UserName": request.user.username,
@@ -35,7 +42,8 @@ class StudentProfileView(APIView):
             "branch_code": student_details.class_fk.branch_fk.branch_code,
             "present_days": student_details.present_days,
             "free_status": student_details.fee_status,
-            "backlog_count": student_details.backlog_count
+            "backlog_count": student_details.backlog_count,
+            "attendance": attendance
         }
 
         return Response(user_details)

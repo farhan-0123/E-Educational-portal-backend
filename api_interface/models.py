@@ -3,6 +3,7 @@ import uuid, datetime
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from random import randint
 
 
 class ExtendedUserProfile(models.Model):
@@ -79,9 +80,19 @@ class Subject(models.Model):
     subject_name = models.CharField(max_length=100)
     subject_credits = models.IntegerField()
     subject_photo_url = models.URLField(default="null")
+    max_attendance = models.IntegerField()
 
     def __str__(self):
-        return f" Subject Code: {self.subject_code} Subject Name: {self.subject_name}"
+        return f"{self.subject_code} Subject Name: {self.subject_name}"
+
+
+class StudentSubjectAttendance(models.Model):
+    subject_fk = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    student_fk = models.ForeignKey(User, on_delete=models.CASCADE)
+    attendance = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.subject_fk}  {self.student_fk} {self.attendance}"
 
 
 class Teacher(models.Model):
