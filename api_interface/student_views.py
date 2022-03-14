@@ -17,6 +17,7 @@ class StudentProfileView(APIView):
     def get(self, request, *args, **kwargs):
         extra_user_detail = ExtendedUserProfile.objects.get(user=request.user)
         student_details = Student.objects.get(user=request.user)
+
         attendance = []
 
         for subject in Subject.objects.filter(class_fk=student_details.class_fk):
@@ -24,6 +25,16 @@ class StudentProfileView(APIView):
                 "name": subject.subject_name,
                 "value": StudentSubjectAttendance.objects.get(student_fk=request.user, subject_fk=subject).attendance
             })
+
+        marks_list = []
+
+        for mark_sheet in ExamResult.objects.filter(student_fk=request.user):
+            marks_list.append(
+                {
+                    "name": mark_sheet.date,
+                    "value": mark_sheet.result
+                }
+            )
 
         user_details = {
             "UserName": request.user.username,
@@ -43,7 +54,8 @@ class StudentProfileView(APIView):
             "present_days": student_details.present_days,
             "free_status": student_details.fee_status,
             "backlog_count": student_details.backlog_count,
-            "attendance": attendance
+            "attendance": attendance,
+            "marks": marks_list
         }
 
         return Response(user_details)
