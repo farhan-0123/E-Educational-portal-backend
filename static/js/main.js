@@ -104,7 +104,7 @@ btnJoin.addEventListener('click', () => {
         wsStart = 'wss://'
     }
 
-    let endPoint = wsStart + loc.host + loc.pathname + 'room/506abf286f17488786237f2d8dc009ca/' + username + '/';
+    let endPoint = wsStart + loc.host + loc.pathname + 'room/' + roomId +  '/' + username + '/';
     webSocket = new WebSocket(endPoint);
 
     webSocket.addEventListener('open', (e) => {

@@ -1,17 +1,18 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 import json
-from api_interface.models import Student
+from api_interface.models import Student, Subject, StudentSubjectAttendance
 from threading import Thread
 from core.room.models import Room
 
 
-def present_add(username):
+def present_add(username, room_id):
     try:
-        student = Student.objects.get(user__username=username)
-        print(username + " has Joined " + str(student.present_days) + " Present Days")
-        student.present_days += 1
-        student.save()
-
+        room = Room.objects.get(public_id=room_id)
+        attendance = StudentSubjectAttendance.objects.get(student_fk__username=username,
+                                                          subject_fk__subject_code=int(room.name))
+        attendance.attendance += 1
+        attendance.save()
+        print("Attendance Updated Successful")
     except:
         print("Ether a teacher or admin or someone unknown has joined.")
 
@@ -20,7 +21,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self, **kwargs):
         self.room_name = self.scope['url_route']['kwargs']['room_id']
         self.room_group_name = self.room_name
-        t = Thread(target=present_add, kwargs={"username": self.scope['url_route']['kwargs']['username']})
+        t = Thread(target=present_add, kwargs={
+            "username": self.scope['url_route']['kwargs']['username'],
+            "room_id": self.room_name
+        })
         t.start()
         # Join room group
         await self.channel_layer.group_add(

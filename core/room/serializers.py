@@ -18,9 +18,11 @@ class RoomSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data['status'] = 'active'
-        room = Room.objects.create(**validated_data)
-        return room
+        if not Room.objects.filter(name=validated_data['name']):
+            validated_data['status'] = 'active'
+            room = Room.objects.create(**validated_data)
+            return room
+        return Room.objects.get(name=validated_data['name'])
 
     class Meta:
         model = Room

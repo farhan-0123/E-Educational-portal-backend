@@ -11,4 +11,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
-        return Room.objects.filter(status='active')
+        return Room.objects.all()
+
+    def post(self, request):
+        return Room.objects.get(name=request.name)
