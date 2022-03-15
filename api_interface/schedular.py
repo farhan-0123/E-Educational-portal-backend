@@ -15,8 +15,21 @@ def chat_delete():
 
 def exam_delete():
     print("SCHEDULER Deleting the Exam...", datetime.now())
+
     ExamQuestion.objects.all().delete()
     exam = Exam.objects.all()[0]
+
+    for student in Student.objects.all():
+        if not ExamResult.objects.filter(student_fk=student.user, date=exam.exam_date):
+            result = ExamResult(
+                date=exam.exam_date,
+                student_fk=student.user,
+                result=0,
+                exam_complete=True,
+                previous_question_id=9
+            )
+            result.save()
+
     exam.exam_date = date.today()
     exam.save()
 
