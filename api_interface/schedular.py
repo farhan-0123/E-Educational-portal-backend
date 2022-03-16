@@ -28,8 +28,6 @@ def prediction_model():
     results = ExamResult.objects.all()
     student_list = Student.objects.all()
 
-    scheduler.remove_job("prediction_model")
-
     for student in student_list:
 
         student_result = results.filter(student_fk=student.user)
@@ -48,12 +46,20 @@ def prediction_model():
 
             model = LinearRegression()
             model.fit(x_numpy, y_numpy)
-            print(model.predict(array([x_numpy.max() + 7, ]).reshape(-1, 1)))
+            week_one_prediction = model.predict(array([x_numpy.max() + 7, ]).reshape(-1, 1))[0]
+            week_two_prediction = model.predict(array([x_numpy.max() + 14, ]).reshape(-1, 1))[0]
+            if week_one_prediction > 10:
+                week_one_prediction = 9.7
+            if week_two_prediction > 10:
+                week_two_prediction = 9.7
+            student.week_one_prediction = week_one_prediction
+            student.week_two_prediction = week_two_prediction
+            student.save()
 
 
 def start_scheduler():
     print("Starting the background scheduler...")
     scheduler.add_job(chat_delete, 'interval', days=1)
     scheduler.add_job(exam_delete, 'cron', day_of_week='mon')
-    # scheduler.add_job(prediction_model, 'interval', seconds=1, id="prediction_model")
+    scheduler.add_job(prediction_model, 'cron', day_of_week='mon')
     scheduler.start()

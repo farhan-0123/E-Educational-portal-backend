@@ -36,6 +36,16 @@ class StudentProfileView(APIView):
                 }
             )
 
+        marks_list.append({
+            "name": "Next Week 1 Prediction",
+            "Value": student_details.week_one_prediction
+        })
+
+        marks_list.append({
+            "name": "Next Week 2 Prediction",
+            "Value": student_details.week_two_prediction
+        })
+
         user_details = {
             "UserName": request.user.username,
             "image": extra_user_detail.image_link,
@@ -243,7 +253,7 @@ class StudentTestCheckView(APIView):
                 result_obj.exam_complete = True
                 result_obj.save()
 
-                return Response("Exam Complete")
+                return Response({"result": result_obj.result})
 
         if request.data.__contains__("StartExam"):
             question = ExamQuestion.objects.all()[0]

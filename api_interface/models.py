@@ -68,6 +68,8 @@ class Student(models.Model):
     fee_status = models.BooleanField()
     backlog_count = models.IntegerField()
     parent_phone = models.CharField(max_length=15, default="+99999999999999")
+    week_one_prediction = models.IntegerField(default=0)
+    week_two_prediction = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
