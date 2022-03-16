@@ -209,7 +209,8 @@ class StudentTestCheckView(APIView):
                     "optionA": option_queryset[0].option_text,
                     "optionB": option_queryset[1].option_text,
                     "optionC": option_queryset[2].option_text,
-                    "optionD": option_queryset[3].option_text
+                    "optionD": option_queryset[3].option_text,
+                    "result": result_obj.result,
                 }
 
                 return Response(return_data)
@@ -256,7 +257,8 @@ class StudentTestCheckView(APIView):
                 "optionA": option_queryset[0].option_text,
                 "optionB": option_queryset[1].option_text,
                 "optionC": option_queryset[2].option_text,
-                "optionD": option_queryset[3].option_text
+                "optionD": option_queryset[3].option_text,
+                "result": 0,
             }
 
             return Response(return_data)
