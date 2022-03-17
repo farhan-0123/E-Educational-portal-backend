@@ -36,6 +36,8 @@ class StudentProfileView(APIView):
                 }
             )
 
+        marks_list = marks_list[-5:]
+
         marks_list.append({
             "name": "Next Week 1 Prediction",
             "Value": student_details.week_one_prediction
