@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 import json
-from api_interface.models import Student, Subject, StudentSubjectAttendance
+from api_interface.models import StudentSubjectAttendance
 from threading import Thread
 from core.room.models import Room
 

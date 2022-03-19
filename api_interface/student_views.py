@@ -209,7 +209,7 @@ class StudentTestCheckView(APIView):
             result_obj = ExamResult.objects.get(date=exam.exam_date, student_fk=request.user)
 
             if result_obj.exam_complete:
-                return Response("Exam Already Taken")
+                return Response({"result": result_obj.result})
 
             if request.data.__contains__("StartExam"):
                 question = ExamQuestion.objects.get(id=result_obj.previous_question_id)
